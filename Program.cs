@@ -4,6 +4,8 @@ using Microsoft.Extensions.Hosting;
 using Serilog;
 using Serilog.Events;
 using Serilog.Exceptions;
+using AD419Functions.Services;
+using AD419Functions.Configuration;
 
 var host = new HostBuilder()
     .ConfigureAppConfiguration((hostContext, builder) =>
@@ -37,6 +39,9 @@ var host = new HostBuilder()
         {
             builder.AddSerilog(Log.Logger, dispose: true);
         });
+
+        services.Configure<AggieEnterpriseOptions>(hostContext.Configuration.GetSection("AggieEnterprise"));
+        services.AddSingleton<AggieEnterpriseService>();
     })
     .Build();
 
