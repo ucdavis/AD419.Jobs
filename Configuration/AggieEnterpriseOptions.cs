@@ -8,4 +8,5 @@ public class AggieEnterpriseOptions
     public string TokenEndpoint { get; set; } = "";
     public string ScopeApp { get; set; } = "";
     public string ScopeEnv { get; set; } = "";
+    public int BatchSize { get; set; } = 1000;
 }

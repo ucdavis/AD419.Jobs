@@ -25,20 +25,19 @@ public class AggieEnterpriseService
             $"{_options.ScopeApp}-{_options.ScopeEnv}");
     }
 
-    public async IAsyncEnumerable<IErpDepartmentSearch2_ErpFinancialDepartmentSearch_Data> GetFinancialDepartmentValues(int batchSize = 100)
+    public async IAsyncEnumerable<IErpDepartmentAllPaged_ErpFinancialDepartmentSearch_Data> GetFinancialDepartmentValues()
     {
         var startIndex = 0;
 
         while (startIndex > -1)
         {
-            var result = await _apiClient.ErpDepartmentSearch2.ExecuteAsync(new ErpFinancialDepartmentFilterInput
+            var result = await _apiClient.ErpDepartmentAllPaged.ExecuteAsync(new ErpFinancialDepartmentFilterInput
             {
                 SearchCommon = new SearchCommonInputs
                 {
-                    Limit = batchSize,
+                    Limit = _options.BatchSize,
                     StartIndex = startIndex,
                     IncludeTotalResultCount = true,
-                    Sort = new string[] { "parentCode", "code" },
                 },
                 Enabled = new BooleanFilterInput
                 {
@@ -47,13 +46,14 @@ public class AggieEnterpriseService
             });
 
             var data = result.ReadData();
+            startIndex = data.ErpFinancialDepartmentSearch.Data.Count > 0 
+                ? startIndex + data.ErpFinancialDepartmentSearch.Data.Count
+                : -1;
 
             foreach (var deptData in data.ErpFinancialDepartmentSearch.Data)
             {
-                //Log.Information("Parent: {ParentCode} Dept: {DeptCode} - {DeptName}", deptData.ParentCode, deptData.Code, deptData.Name);
                 yield return deptData;
             }
-            startIndex = data.ErpFinancialDepartmentSearch.Metadata.NextStartIndex ?? -1;
         }
     }
 

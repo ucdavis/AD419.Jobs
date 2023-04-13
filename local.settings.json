@@ -16,6 +16,10 @@
     "ConsumerSecret": "[external]",
     "TokenEndpoint": "[external]",
     "ScopeApp": "AD419Functions",
-    "ScopeEnv": "[external]"
+    "ScopeEnv": "[external]",
+    "BatchSize": 1000
+  },
+  "SyncService": {
+    "BulkCopyBatchSize": 1000
   }
 }

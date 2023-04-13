@@ -42,6 +42,8 @@ var host = new HostBuilder()
 
         services.Configure<ConnectionStrings>(hostContext.Configuration.GetSection("ConnectionStrings"));
         services.Configure<AggieEnterpriseOptions>(hostContext.Configuration.GetSection("AggieEnterprise"));
+        services.Configure<SyncOptions>(hostContext.Configuration.GetSection("SyncService"));
+
         services.AddSingleton<AggieEnterpriseService>();
         services.AddSingleton<SyncService>();
     })

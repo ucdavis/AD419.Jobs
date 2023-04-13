@@ -15,11 +15,13 @@ public class SyncService
     private readonly AggieEnterpriseService _aggieEnterpriseService;
     private readonly ConcurrentDictionary<Type, DataTable> _dataTables = new();
     private readonly ConnectionStrings _connectionStrings;
+    private readonly SyncOptions _syncOptions;
 
-    public SyncService(AggieEnterpriseService aggieEnterpriseService, IOptions<ConnectionStrings> connectionStrings)
+    public SyncService(AggieEnterpriseService aggieEnterpriseService, IOptions<ConnectionStrings> connectionStrings, IOptions<SyncOptions> syncOptions)
     {
         _aggieEnterpriseService = aggieEnterpriseService;
         _connectionStrings = connectionStrings.Value;
+        _syncOptions = syncOptions.Value;
     }
 
     public async Task Run()
@@ -32,27 +34,26 @@ public class SyncService
 
     public async Task SyncFinancialDepartmentValues(SqlConnection connection)
     {
-        var dataTable = GetDataTable<IErpDepartmentSearch2_ErpFinancialDepartmentSearch_Data>("temp_ErpFinancialDepartmentValues");
+        var dataTable = GetDataTable<IErpDepartmentAllPaged_ErpFinancialDepartmentSearch_Data>("temp_ErpFinancialDepartmentValues");
         Log.Information("Creating table {TableName}", dataTable.TableName);
         await CreateDbTable(connection, dataTable);
 
-        var batchSize = 1000;
         var i = 0;
-        await foreach (var item in _aggieEnterpriseService.GetFinancialDepartmentValues(batchSize))
+        await foreach (var item in _aggieEnterpriseService.GetFinancialDepartmentValues())
         {
             dataTable.Add(item);
-            if (++i % batchSize == 0)
+            if (++i % _syncOptions.BulkCopyBatchSize == 0)
             {
-                Log.Information("Syncing batch of {BatchSize} financial department values", batchSize);
+                Log.Information("Syncing batch of {BatchSize} financial department values", _syncOptions.BulkCopyBatchSize);
                 await SyncDataTable(connection, dataTable);
                 dataTable.Rows.Clear();
-                return;
             }
         }
 
         if (dataTable.Rows.Count > 0)
         {
             // one last batch
+            Log.Information("Syncing batch of {BatchSize} financial department values", dataTable.Rows.Count);
             await SyncDataTable(connection, dataTable);
             dataTable.Rows.Clear();
         }
