@@ -40,8 +40,10 @@ var host = new HostBuilder()
             builder.AddSerilog(Log.Logger, dispose: true);
         });
 
+        services.Configure<ConnectionStrings>(hostContext.Configuration.GetSection("ConnectionStrings"));
         services.Configure<AggieEnterpriseOptions>(hostContext.Configuration.GetSection("AggieEnterprise"));
         services.AddSingleton<AggieEnterpriseService>();
+        services.AddSingleton<SyncService>();
     })
     .Build();
 

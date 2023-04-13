@@ -7,11 +7,11 @@ namespace AD419Functions;
 
 public class PullAggieEnterpriseData
 {
-    private readonly AggieEnterpriseService _aggieEnterpriseService;
+    private readonly SyncService _syncService;
 
-    public PullAggieEnterpriseData(AggieEnterpriseService aggieEnterpriseService)
+    public PullAggieEnterpriseData(SyncService syncService)
     {
-        _aggieEnterpriseService = aggieEnterpriseService;
+        _syncService = syncService;
     }
 
     [Function("PullAggieEnterpriseData")]
@@ -22,7 +22,7 @@ public class PullAggieEnterpriseData
         )] MyInfo myTimer)
     {
         Log.Information($"C# Timer trigger function executed at: {DateTime.Now}");
-        await _aggieEnterpriseService.Test();
+        await _syncService.Run();
     }
 }
 

@@ -8,10 +8,13 @@
     <UserSecretsId>1af5cb6b-980b-448a-ad94-1677a1314f4b</UserSecretsId>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="AggieEnterpriseApi" Version="0.2.169" />
+    <ProjectReference Include="../AggieEnterpriseApi/src/AggieEnterpriseApi/AggieEnterpriseApi.csproj" />
+  </ItemGroup>
+  <ItemGroup>
     <PackageReference Include="Microsoft.Azure.Functions.Worker" Version="1.8.0" />
     <PackageReference Include="Microsoft.Azure.Functions.Worker.Extensions.Timer" Version="4.0.1" />
     <PackageReference Include="Microsoft.Azure.Functions.Worker.Sdk" Version="1.7.0" />
+    <PackageReference Include="Microsoft.Data.SqlClient" Version="5.1.1" />
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="7.0.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="7.0.0" />
     <PackageReference Include="Serilog" Version="2.12.0" />
