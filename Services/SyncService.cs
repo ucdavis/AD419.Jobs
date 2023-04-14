@@ -7,6 +7,8 @@ using Microsoft.Extensions.Options;
 using AD419Functions.Configuration;
 using Serilog;
 using System.Net;
+using AD419Functions.Utilities;
+using System.Text;
 
 namespace AD419Functions.Services;
 
@@ -34,9 +36,8 @@ public class SyncService
 
     public async Task SyncFinancialDepartmentValues(SqlConnection connection)
     {
-        var dataTable = GetDataTable<IErpDepartmentAllPaged_ErpFinancialDepartmentSearch_Data>("temp_ErpFinancialDepartmentValues");
-        Log.Information("Creating table {TableName}", dataTable.TableName);
-        await CreateDbTable(connection, dataTable);
+        var dataTable = GetDataTable<IErpDepartmentAllPaged_ErpFinancialDepartmentSearch_Data>("#ErpFinancialDepartmentValues");
+        await ExecuteScript("Scripts/ErpFinancialDepartmentValues_Create.sql", connection);
 
         var i = 0;
         await foreach (var item in _aggieEnterpriseService.GetFinancialDepartmentValues())
@@ -57,14 +58,20 @@ public class SyncService
             await SyncDataTable(connection, dataTable);
             dataTable.Rows.Clear();
         }
+
+        await ExecuteScript("Scripts/ErpFinancialDepartmentValues_CopyToFinancialDepartmentValues.sql", connection);
     }
 
-    private static async Task CreateDbTable<T>(SqlConnection connection, DataTable<T> dataTable)
+    private static async Task ExecuteScript(string fileName, SqlConnection connection)
     {
-        // create table using the schema of the data table
-        var sqlCommand = connection.CreateCommand();
-        sqlCommand.CommandText = dataTable.GenerateDDL();
-        await sqlCommand.ExecuteNonQueryAsync();
+        Log.Information("Executing script {FileName}", fileName);
+        // TODO: use connection.CreateBatch() once it is implemented for SqlConnection
+        foreach (var script in SqlHelper.GetBatchesFromFile(fileName))
+        {
+            using var command = connection.CreateCommand();
+            command.CommandText = script;
+            await command.ExecuteNonQueryAsync();
+        }
     }
 
     private static async Task SyncDataTable(SqlConnection connection, DataTable dataTable)
