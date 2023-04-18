@@ -1,8 +1,5 @@
-drop table if exists #ErpFinancialDepartmentValues;
-
-go
 create table
-  #ErpFinancialDepartmentValues (
+  #ErpAccountValues (
     Id bigint,
     Code nvarchar (255),
     Name nvarchar (255),

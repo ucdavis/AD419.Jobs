@@ -37,7 +37,6 @@ public class AggieEnterpriseService
                 {
                     Limit = _options.BatchSize,
                     StartIndex = startIndex,
-                    IncludeTotalResultCount = true,
                 },
                 Enabled = new BooleanFilterInput
                 {
@@ -50,19 +49,109 @@ public class AggieEnterpriseService
                 ? startIndex + data.ErpFinancialDepartmentSearch.Data.Count
                 : -1;
 
-            foreach (var deptData in data.ErpFinancialDepartmentSearch.Data)
+            foreach (var item in data.ErpFinancialDepartmentSearch.Data)
             {
-                yield return deptData;
+                yield return item;
             }
         }
     }
 
-    public async Task Test()
+    public async IAsyncEnumerable<IErpFundAllPaged_ErpFundSearch_Data> GetFundValues()
     {
-        var result = await _apiClient.GlValidateChartstring.ExecuteAsync("3110-13U20-ADNO003-238533-00-000-0000000000-000000-0000-000000-000000", true);
+        var startIndex = 0;
 
-        var data = result.ReadData();
+        while (startIndex > -1)
+        {
+            var result = await _apiClient.ErpFundAllPaged.ExecuteAsync(new ErpFundFilterInput
+            {
+                SearchCommon = new SearchCommonInputs
+                {
+                    Limit = _options.BatchSize,
+                    StartIndex = startIndex,
+                },
+                Enabled = new BooleanFilterInput
+                {
+                    Eq = true
+                },
+                // TODO: this is a workaround for skipping record with invalid name. remove this when data gets corrected
+                Code = new StringFilterInput
+                {
+                    Ne = "37542"
+                },
+            });
 
-        Log.Information("CCOA string is valid: {IsValid}", data.GlValidateChartstring.ValidationResponse.Valid);
+            var data = result.ReadData();
+            startIndex = data.ErpFundSearch.Data.Count > 0 
+                ? startIndex + data.ErpFundSearch.Data.Count
+                : -1;
+
+            foreach (var item in data.ErpFundSearch.Data)
+            {
+                yield return item;
+            }
+        }
     }
+
+    public async IAsyncEnumerable<IErpAccountAllPaged_ErpAccountSearch_Data> GetAccountValues()
+    {
+        var startIndex = 0;
+
+        while (startIndex > -1)
+        {
+            var result = await _apiClient.ErpAccountAllPaged.ExecuteAsync(new ErpAccountFilterInput
+            {
+                SearchCommon = new SearchCommonInputs
+                {
+                    Limit = _options.BatchSize,
+                    StartIndex = startIndex,
+                },
+                Enabled = new BooleanFilterInput
+                {
+                    Eq = true
+                }
+            });
+
+            var data = result.ReadData();
+            startIndex = data.ErpAccountSearch.Data.Count > 0 
+                ? startIndex + data.ErpAccountSearch.Data.Count
+                : -1;
+
+            foreach (var item in data.ErpAccountSearch.Data)
+            {
+                yield return item;
+            }
+        }
+    }
+
+    public async IAsyncEnumerable<IErpProjectAllPaged_ErpProjectSearch_Data> GetProjectValues()
+    {
+        var startIndex = 0;
+
+        while (startIndex > -1)
+        {
+            var result = await _apiClient.ErpProjectAllPaged.ExecuteAsync(new ErpProjectFilterInput
+            {
+                SearchCommon = new SearchCommonInputs
+                {
+                    Limit = _options.BatchSize,
+                    StartIndex = startIndex,
+                },
+                Enabled = new BooleanFilterInput
+                {
+                    Eq = true
+                },
+            });
+
+            var data = result.ReadData();
+            startIndex = data.ErpProjectSearch.Data.Count > 0 
+                ? startIndex + data.ErpProjectSearch.Data.Count
+                : -1;
+
+            foreach (var item in data.ErpProjectSearch.Data)
+            {
+                yield return item;
+            }
+        }
+    }
+
 }

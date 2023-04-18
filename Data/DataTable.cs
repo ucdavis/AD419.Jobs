@@ -6,7 +6,7 @@ namespace AD419Functions.Data;
 
 public class DataTable<T> : DataTable
 {
-    private readonly PropertyDescriptorCollection _properties = TypeDescriptor.GetProperties(typeof(T));
+    private static readonly PropertyDescriptorCollection _properties = TypeDescriptor.GetProperties(typeof(T));
 
     public DataTable(string tableName) : base(tableName)
     {
@@ -20,7 +20,8 @@ public class DataTable<T> : DataTable
     {
         DataRow row = NewRow();
 
-        // TODO: Use something faster like compiled expressions or Dotnext.Reflection
+        // TODO: If performance becomes an issue, use something faster like compiled expressions or Dotnext.Reflection.
+        //       Or just make make column init/load operations abstract.
         foreach (PropertyDescriptor prop in _properties)
         {
             row[prop.Name] = prop.GetValue(item) ?? DBNull.Value;
