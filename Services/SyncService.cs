@@ -58,7 +58,7 @@ public class SyncService
 
     private async Task SyncFinancialDepartmentValues(SqlConnection connection, SqlTransaction transaction)
     {
-        var dataTable = GetDataTable<IErpDepartmentAllPaged_ErpFinancialDepartmentSearch_Data>("#ErpFinancialDepartmentValues");
+        var dataTable = GetDataTable<IErpDepartmentSearch_ErpFinancialDepartmentSearch_Data>("#ErpFinancialDepartmentValues");
         await ExecuteScript("Scripts/ErpFinancialDepartmentValues_Start.sql", connection, transaction);
 
         var i = 0;
@@ -86,7 +86,7 @@ public class SyncService
 
     private async Task SyncFundValues(SqlConnection connection, SqlTransaction transaction)
     {
-        var dataTable = GetDataTable<IErpFundAllPaged_ErpFundSearch_Data>("#ErpFundValues");
+        var dataTable = GetDataTable<IErpFundSearch_ErpFundSearch_Data>("#ErpFundValues");
         await ExecuteScript("Scripts/ErpFundValues_Start.sql", connection, transaction);
 
         var i = 0;
@@ -114,7 +114,7 @@ public class SyncService
 
     private async Task SyncAccountValues(SqlConnection connection, SqlTransaction transaction)
     {
-        var dataTable = GetDataTable<IErpAccountAllPaged_ErpAccountSearch_Data>("#ErpAccountValues");
+        var dataTable = GetDataTable<IErpAccountSearch_ErpAccountSearch_Data>("#ErpAccountValues");
         await ExecuteScript("Scripts/ErpAccountValues_Start.sql", connection, transaction);
 
         var i = 0;
@@ -142,7 +142,7 @@ public class SyncService
 
     private async Task SyncProjectValues(SqlConnection connection, SqlTransaction transaction)
     {
-        var dataTable = GetDataTable<IErpProjectAllPaged_ErpProjectSearch_Data>("#ErpProjectValues");
+        var dataTable = GetDataTable<IErpProjectSearch_ErpProjectSearch_Data>("#ErpProjectValues");
         await ExecuteScript("Scripts/ErpProjectValues_Start.sql", connection, transaction);
 
         var i = 0;

@@ -25,13 +25,13 @@ public class AggieEnterpriseService
             $"{_options.ScopeApp}-{_options.ScopeEnv}");
     }
 
-    public async IAsyncEnumerable<IErpDepartmentAllPaged_ErpFinancialDepartmentSearch_Data> GetFinancialDepartmentValues()
+    public async IAsyncEnumerable<IErpDepartmentSearch_ErpFinancialDepartmentSearch_Data> GetFinancialDepartmentValues()
     {
         var startIndex = 0;
 
         while (startIndex > -1)
         {
-            var result = await _apiClient.ErpDepartmentAllPaged.ExecuteAsync(new ErpFinancialDepartmentFilterInput
+            var result = await _apiClient.ErpDepartmentSearch.ExecuteAsync(new ErpFinancialDepartmentFilterInput
             {
                 SearchCommon = new SearchCommonInputs
                 {
@@ -42,7 +42,8 @@ public class AggieEnterpriseService
                 {
                     Eq = true
                 },
-            });
+            },
+            "A"); // Just a placeholder. We're not interested in this portion of the response.
 
             var data = result.ReadData();
             startIndex = data.ErpFinancialDepartmentSearch.Data.Count > 0 
@@ -56,13 +57,13 @@ public class AggieEnterpriseService
         }
     }
 
-    public async IAsyncEnumerable<IErpFundAllPaged_ErpFundSearch_Data> GetFundValues()
+    public async IAsyncEnumerable<IErpFundSearch_ErpFundSearch_Data> GetFundValues()
     {
         var startIndex = 0;
 
         while (startIndex > -1)
         {
-            var result = await _apiClient.ErpFundAllPaged.ExecuteAsync(new ErpFundFilterInput
+            var result = await _apiClient.ErpFundSearch.ExecuteAsync(new ErpFundFilterInput
             {
                 SearchCommon = new SearchCommonInputs
                 {
@@ -78,7 +79,8 @@ public class AggieEnterpriseService
                 {
                     Ne = "37542"
                 },
-            });
+            },
+            "A"); // Just a placeholder. We're not interested in this portion of the response.
 
             var data = result.ReadData();
             startIndex = data.ErpFundSearch.Data.Count > 0 
@@ -92,13 +94,13 @@ public class AggieEnterpriseService
         }
     }
 
-    public async IAsyncEnumerable<IErpAccountAllPaged_ErpAccountSearch_Data> GetAccountValues()
+    public async IAsyncEnumerable<IErpAccountSearch_ErpAccountSearch_Data> GetAccountValues()
     {
         var startIndex = 0;
 
         while (startIndex > -1)
         {
-            var result = await _apiClient.ErpAccountAllPaged.ExecuteAsync(new ErpAccountFilterInput
+            var result = await _apiClient.ErpAccountSearch.ExecuteAsync(new ErpAccountFilterInput
             {
                 SearchCommon = new SearchCommonInputs
                 {
@@ -109,7 +111,8 @@ public class AggieEnterpriseService
                 {
                     Eq = true
                 }
-            });
+            },
+            "A"); // Just a placeholder. We're not interested in this portion of the response.
 
             var data = result.ReadData();
             startIndex = data.ErpAccountSearch.Data.Count > 0 
@@ -123,13 +126,13 @@ public class AggieEnterpriseService
         }
     }
 
-    public async IAsyncEnumerable<IErpProjectAllPaged_ErpProjectSearch_Data> GetProjectValues()
+    public async IAsyncEnumerable<IErpProjectSearch_ErpProjectSearch_Data> GetProjectValues()
     {
         var startIndex = 0;
 
         while (startIndex > -1)
         {
-            var result = await _apiClient.ErpProjectAllPaged.ExecuteAsync(new ErpProjectFilterInput
+            var result = await _apiClient.ErpProjectSearch.ExecuteAsync(new ErpProjectFilterInput
             {
                 SearchCommon = new SearchCommonInputs
                 {
@@ -140,7 +143,8 @@ public class AggieEnterpriseService
                 {
                     Eq = true
                 },
-            });
+            },
+            "A"); // Just a placeholder. We're not interested in this portion of the response.
 
             var data = result.ReadData();
             startIndex = data.ErpProjectSearch.Data.Count > 0 
