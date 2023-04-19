@@ -5,7 +5,6 @@ using AggieEnterpriseApi;
 using AggieEnterpriseApi.Extensions;
 using Microsoft.Extensions.Options;
 using AD419Functions.Configuration;
-using System.Collections.ObjectModel;
 
 namespace AD419Functions.Services;
 
@@ -28,27 +27,41 @@ public class AggieEnterpriseService
     public async IAsyncEnumerable<IErpDepartmentSearch_ErpFinancialDepartmentSearch_Data> GetFinancialDepartmentValues()
     {
         var startIndex = 0;
+        IErpDepartmentSearchResult? data = null;
 
         while (startIndex > -1)
         {
-            var result = await _apiClient.ErpDepartmentSearch.ExecuteAsync(new ErpFinancialDepartmentFilterInput
+            try
             {
-                SearchCommon = new SearchCommonInputs
+                var result = await _apiClient.ErpDepartmentSearch.ExecuteAsync(new ErpFinancialDepartmentFilterInput
                 {
-                    Limit = _options.BatchSize,
-                    StartIndex = startIndex,
+                    SearchCommon = new SearchCommonInputs
+                    {
+                        Limit = _options.BatchSize,
+                        StartIndex = startIndex,
+                    },
+                    Enabled = new BooleanFilterInput
+                    {
+                        Eq = true
+                    },
                 },
-                Enabled = new BooleanFilterInput
-                {
-                    Eq = true
-                },
-            },
-            "A"); // Just a placeholder. We're not interested in this portion of the response.
+                "A"); // Just a placeholder. We're not interested in this portion of the response.
 
-            var data = result.ReadData();
-            startIndex = data.ErpFinancialDepartmentSearch.Data.Count > 0 
-                ? startIndex + data.ErpFinancialDepartmentSearch.Data.Count
-                : -1;
+                data = result.ReadData();
+                startIndex = data.ErpFinancialDepartmentSearch.Data.Count > 0
+                    ? startIndex + data.ErpFinancialDepartmentSearch.Data.Count
+                    : -1;
+            }
+            catch (Exception ex)
+            {
+#if DEBUG
+                Log.Error(ex, "Error getting department values, skipping batch");
+                startIndex += _options.BatchSize;
+                continue;
+#else
+                throw;
+#endif
+            }
 
             foreach (var item in data.ErpFinancialDepartmentSearch.Data)
             {
@@ -60,32 +73,46 @@ public class AggieEnterpriseService
     public async IAsyncEnumerable<IErpFundSearch_ErpFundSearch_Data> GetFundValues()
     {
         var startIndex = 0;
+        IErpFundSearchResult? data = null;
 
         while (startIndex > -1)
         {
-            var result = await _apiClient.ErpFundSearch.ExecuteAsync(new ErpFundFilterInput
+            try
             {
-                SearchCommon = new SearchCommonInputs
+                var result = await _apiClient.ErpFundSearch.ExecuteAsync(new ErpFundFilterInput
                 {
-                    Limit = _options.BatchSize,
-                    StartIndex = startIndex,
+                    SearchCommon = new SearchCommonInputs
+                    {
+                        Limit = _options.BatchSize,
+                        StartIndex = startIndex,
+                    },
+                    Enabled = new BooleanFilterInput
+                    {
+                        Eq = true
+                    },
+                    // TODO: this is a workaround for skipping record with invalid name. remove this when data gets corrected
+                    Code = new StringFilterInput
+                    {
+                        Ne = "37542"
+                    },
                 },
-                Enabled = new BooleanFilterInput
-                {
-                    Eq = true
-                },
-                // TODO: this is a workaround for skipping record with invalid name. remove this when data gets corrected
-                Code = new StringFilterInput
-                {
-                    Ne = "37542"
-                },
-            },
-            "A"); // Just a placeholder. We're not interested in this portion of the response.
+                "A"); // Just a placeholder. We're not interested in this portion of the response.
 
-            var data = result.ReadData();
-            startIndex = data.ErpFundSearch.Data.Count > 0 
-                ? startIndex + data.ErpFundSearch.Data.Count
-                : -1;
+                data = result.ReadData();
+                startIndex = data.ErpFundSearch.Data.Count > 0
+                    ? startIndex + data.ErpFundSearch.Data.Count
+                    : -1;
+            }
+            catch (Exception ex)
+            {
+#if DEBUG
+                Log.Error(ex, "Error getting fund values, skipping batch");
+                startIndex += _options.BatchSize;
+                continue;
+#else
+                throw;
+#endif
+            }
 
             foreach (var item in data.ErpFundSearch.Data)
             {
@@ -97,59 +124,88 @@ public class AggieEnterpriseService
     public async IAsyncEnumerable<IErpAccountSearch_ErpAccountSearch_Data> GetAccountValues()
     {
         var startIndex = 0;
+        IErpAccountSearchResult? data = null;
 
         while (startIndex > -1)
         {
-            var result = await _apiClient.ErpAccountSearch.ExecuteAsync(new ErpAccountFilterInput
+            try
             {
-                SearchCommon = new SearchCommonInputs
+                var result = await _apiClient.ErpAccountSearch.ExecuteAsync(new ErpAccountFilterInput
                 {
-                    Limit = _options.BatchSize,
-                    StartIndex = startIndex,
+                    SearchCommon = new SearchCommonInputs
+                    {
+                        Limit = _options.BatchSize,
+                        StartIndex = startIndex,
+                    },
+                    Enabled = new BooleanFilterInput
+                    {
+                        Eq = true
+                    }
                 },
-                Enabled = new BooleanFilterInput
-                {
-                    Eq = true
-                }
-            },
-            "A"); // Just a placeholder. We're not interested in this portion of the response.
+                "A"); // Just a placeholder. We're not interested in this portion of the response.
 
-            var data = result.ReadData();
-            startIndex = data.ErpAccountSearch.Data.Count > 0 
-                ? startIndex + data.ErpAccountSearch.Data.Count
-                : -1;
+                data = result.ReadData();
+                startIndex = data.ErpAccountSearch.Data.Count > 0
+                    ? startIndex + data.ErpAccountSearch.Data.Count
+                    : -1;
+            }
+            catch (Exception ex)
+            {
+#if DEBUG
+                Log.Error(ex, "Error getting account values, skipping batch");
+                startIndex += _options.BatchSize;
+                continue;
+#else
+                throw;
+#endif
+            }
 
             foreach (var item in data.ErpAccountSearch.Data)
             {
                 yield return item;
             }
+
         }
     }
 
     public async IAsyncEnumerable<IErpProjectSearch_ErpProjectSearch_Data> GetProjectValues()
     {
         var startIndex = 0;
+        IErpProjectSearchResult? data = null;
 
         while (startIndex > -1)
         {
-            var result = await _apiClient.ErpProjectSearch.ExecuteAsync(new ErpProjectFilterInput
+            try
             {
-                SearchCommon = new SearchCommonInputs
+                var result = await _apiClient.ErpProjectSearch.ExecuteAsync(new ErpProjectFilterInput
                 {
-                    Limit = _options.BatchSize,
-                    StartIndex = startIndex,
+                    SearchCommon = new SearchCommonInputs
+                    {
+                        Limit = _options.BatchSize,
+                        StartIndex = startIndex,
+                    },
+                    Enabled = new BooleanFilterInput
+                    {
+                        Eq = true
+                    },
                 },
-                Enabled = new BooleanFilterInput
-                {
-                    Eq = true
-                },
-            },
-            "A"); // Just a placeholder. We're not interested in this portion of the response.
+                "A"); // Just a placeholder. We're not interested in this portion of the response.
 
-            var data = result.ReadData();
-            startIndex = data.ErpProjectSearch.Data.Count > 0 
-                ? startIndex + data.ErpProjectSearch.Data.Count
-                : -1;
+                data = result.ReadData();
+                startIndex = data.ErpProjectSearch.Data.Count > 0
+                    ? startIndex + data.ErpProjectSearch.Data.Count
+                    : -1;
+            }
+            catch (Exception ex)
+            {
+#if DEBUG
+                Log.Error(ex, "Error getting project values, skipping batch");
+                startIndex += _options.BatchSize;
+                continue;
+#else
+                throw;
+#endif
+            }
 
             foreach (var item in data.ErpProjectSearch.Data)
             {

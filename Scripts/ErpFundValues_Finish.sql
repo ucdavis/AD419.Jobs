@@ -1,12 +1,8 @@
-drop table if exists ErpFundValues;
+truncate table ErpFundValues;
 
 go
 
-select * into ErpFundValues from #ErpFundValues;
-
-go
-
-create index ix_ErpFundValues_Code on ErpFundValues ([Code]);
-create index ix_ErpFundValues_ParentCode on ErpFundValues ([ParentCode]);
+insert into ErpFundValues([Id], [Code], [Name], [ParentCode])
+select [Id], [Code], [Name], [ParentCode] from #ErpFundValues;
 
 go

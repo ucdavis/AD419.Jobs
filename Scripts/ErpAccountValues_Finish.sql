@@ -1,12 +1,8 @@
-drop table if exists ErpAccountValues;
+truncate table ErpAccountValues;
 
 go
 
-select * into ErpAccountValues from #ErpAccountValues;
-
-go
-
-create index ix_ErpAccountValues_Code on ErpAccountValues ([Code]);
-create index ix_ErpAccountValues_ParentCode on ErpAccountValues ([ParentCode]);
+insert into ErpAccountValues([Id], [Code], [Name], [ParentCode])
+select [Id], [Code], [Name], [ParentCode] from #ErpAccountValues;
 
 go

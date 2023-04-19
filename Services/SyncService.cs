@@ -1,29 +1,31 @@
-using System.Collections.Concurrent;
 using System.Data;
 using AggieEnterpriseApi;
-using AD419Functions.Data;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Options;
 using AD419Functions.Configuration;
 using Serilog;
-using System.Net;
 using AD419Functions.Utilities;
-using System.Text;
 
 namespace AD419Functions.Services;
 
 public class SyncService
 {
     private readonly AggieEnterpriseService _aggieEnterpriseService;
-    private readonly ConcurrentDictionary<Type, DataTable> _dataTables = new();
     private readonly ConnectionStrings _connectionStrings;
     private readonly SyncOptions _syncOptions;
+    private readonly DataTable _dataTable;
 
     public SyncService(AggieEnterpriseService aggieEnterpriseService, IOptions<ConnectionStrings> connectionStrings, IOptions<SyncOptions> syncOptions)
     {
         _aggieEnterpriseService = aggieEnterpriseService;
         _connectionStrings = connectionStrings.Value;
         _syncOptions = syncOptions.Value;
+        _dataTable = new DataTable();
+        _dataTable.Columns.Add("Id", typeof(long));
+        _dataTable.Columns.Add("Code", typeof(string));
+        _dataTable.Columns.Add("Name", typeof(string));
+        _dataTable.Columns.Add("ParentCode", typeof(string));
+
     }
 
     public async Task Run()
@@ -58,27 +60,26 @@ public class SyncService
 
     private async Task SyncFinancialDepartmentValues(SqlConnection connection, SqlTransaction transaction)
     {
-        var dataTable = GetDataTable<IErpDepartmentSearch_ErpFinancialDepartmentSearch_Data>("#ErpFinancialDepartmentValues");
         await ExecuteScript("Scripts/ErpFinancialDepartmentValues_Start.sql", connection, transaction);
 
         var i = 0;
         await foreach (var item in _aggieEnterpriseService.GetFinancialDepartmentValues())
         {
-            dataTable.Add(item);
+            _dataTable.Add(item.Id, item.Code, item.Name, item.ParentCode);
             if (++i % _syncOptions.BulkCopyBatchSize == 0)
             {
                 Log.Information("Syncing batch of {BatchSize} financial department values", _syncOptions.BulkCopyBatchSize);
-                await SyncDataTable(connection, dataTable, transaction);
-                dataTable.Rows.Clear();
+                await SyncDataTable(connection, _dataTable, transaction, "#ErpFinancialDepartmentValues");
+                _dataTable.Rows.Clear();
             }
         }
 
-        if (dataTable.Rows.Count > 0)
+        if (_dataTable.Rows.Count > 0)
         {
             // one last batch
-            Log.Information("Syncing batch of {BatchSize} financial department values", dataTable.Rows.Count);
-            await SyncDataTable(connection, dataTable, transaction);
-            dataTable.Rows.Clear();
+            Log.Information("Syncing batch of {BatchSize} financial department values", _dataTable.Rows.Count);
+            await SyncDataTable(connection, _dataTable, transaction, "#ErpFinancialDepartmentValues");
+            _dataTable.Rows.Clear();
         }
 
         await ExecuteScript("Scripts/ErpFinancialDepartmentValues_Finish.sql", connection, transaction);
@@ -86,27 +87,26 @@ public class SyncService
 
     private async Task SyncFundValues(SqlConnection connection, SqlTransaction transaction)
     {
-        var dataTable = GetDataTable<IErpFundSearch_ErpFundSearch_Data>("#ErpFundValues");
         await ExecuteScript("Scripts/ErpFundValues_Start.sql", connection, transaction);
 
         var i = 0;
         await foreach (var item in _aggieEnterpriseService.GetFundValues())
         {
-            dataTable.Add(item);
+            _dataTable.Add(item.Id, item.Code, item.Name, item.ParentCode);
             if (++i % _syncOptions.BulkCopyBatchSize == 0)
             {
                 Log.Information("Syncing batch of {BatchSize} fund values", _syncOptions.BulkCopyBatchSize);
-                await SyncDataTable(connection, dataTable, transaction);
-                dataTable.Rows.Clear();
+                await SyncDataTable(connection, _dataTable, transaction, "#ErpFundValues");
+                _dataTable.Rows.Clear();
             }
         }
 
-        if (dataTable.Rows.Count > 0)
+        if (_dataTable.Rows.Count > 0)
         {
             // one last batch
-            Log.Information("Syncing batch of {BatchSize} fund values", dataTable.Rows.Count);
-            await SyncDataTable(connection, dataTable, transaction);
-            dataTable.Rows.Clear();
+            Log.Information("Syncing batch of {BatchSize} fund values", _dataTable.Rows.Count);
+            await SyncDataTable(connection, _dataTable, transaction, "#ErpFundValues");
+            _dataTable.Rows.Clear();
         }
 
         await ExecuteScript("Scripts/ErpFundValues_Finish.sql", connection, transaction);
@@ -114,27 +114,26 @@ public class SyncService
 
     private async Task SyncAccountValues(SqlConnection connection, SqlTransaction transaction)
     {
-        var dataTable = GetDataTable<IErpAccountSearch_ErpAccountSearch_Data>("#ErpAccountValues");
         await ExecuteScript("Scripts/ErpAccountValues_Start.sql", connection, transaction);
 
         var i = 0;
         await foreach (var item in _aggieEnterpriseService.GetAccountValues())
         {
-            dataTable.Add(item);
+            _dataTable.Add(item.Id, item.Code, item.Name, item.ParentCode);
             if (++i % _syncOptions.BulkCopyBatchSize == 0)
             {
                 Log.Information("Syncing batch of {BatchSize} account values", _syncOptions.BulkCopyBatchSize);
-                await SyncDataTable(connection, dataTable, transaction);
-                dataTable.Rows.Clear();
+                await SyncDataTable(connection, _dataTable, transaction, "#ErpAccountValues");
+                _dataTable.Rows.Clear();
             }
         }
 
-        if (dataTable.Rows.Count > 0)
+        if (_dataTable.Rows.Count > 0)
         {
             // one last batch
-            Log.Information("Syncing batch of {BatchSize} account values", dataTable.Rows.Count);
-            await SyncDataTable(connection, dataTable, transaction);
-            dataTable.Rows.Clear();
+            Log.Information("Syncing batch of {BatchSize} account values", _dataTable.Rows.Count);
+            await SyncDataTable(connection, _dataTable, transaction, "#ErpAccountValues");
+            _dataTable.Rows.Clear();
         }
 
         await ExecuteScript("Scripts/ErpAccountValues_Finish.sql", connection, transaction);
@@ -142,27 +141,26 @@ public class SyncService
 
     private async Task SyncProjectValues(SqlConnection connection, SqlTransaction transaction)
     {
-        var dataTable = GetDataTable<IErpProjectSearch_ErpProjectSearch_Data>("#ErpProjectValues");
         await ExecuteScript("Scripts/ErpProjectValues_Start.sql", connection, transaction);
 
         var i = 0;
         await foreach (var item in _aggieEnterpriseService.GetProjectValues())
         {
-            dataTable.Add(item);
+            _dataTable.Add(item.Id, item.Code, item.Name, item.ParentCode);
             if (++i % _syncOptions.BulkCopyBatchSize == 0)
             {
                 Log.Information("Syncing batch of {BatchSize} Project values", _syncOptions.BulkCopyBatchSize);
-                await SyncDataTable(connection, dataTable, transaction);
-                dataTable.Rows.Clear();
+                await SyncDataTable(connection, _dataTable, transaction, "#ErpProjectValues");
+                _dataTable.Rows.Clear();
             }
         }
 
-        if (dataTable.Rows.Count > 0)
+        if (_dataTable.Rows.Count > 0)
         {
             // one last batch
-            Log.Information("Syncing batch of {BatchSize} Project values", dataTable.Rows.Count);
-            await SyncDataTable(connection, dataTable, transaction);
-            dataTable.Rows.Clear();
+            Log.Information("Syncing batch of {BatchSize} Project values", _dataTable.Rows.Count);
+            await SyncDataTable(connection, _dataTable, transaction, "#ErpProjectValues");
+            _dataTable.Rows.Clear();
         }
 
         await ExecuteScript("Scripts/ErpProjectValues_Finish.sql", connection, transaction);
@@ -181,18 +179,25 @@ public class SyncService
         }
     }
 
-    private static async Task SyncDataTable(SqlConnection connection, DataTable dataTable, SqlTransaction transaction)
+    private static async Task SyncDataTable(SqlConnection connection, DataTable dataTable, SqlTransaction transaction, string tableName)
     {
         using var bulkCopy = new SqlBulkCopy(connection, SqlBulkCopyOptions.Default, transaction);
-        bulkCopy.DestinationTableName = dataTable.TableName;
+        bulkCopy.DestinationTableName = tableName;
         bulkCopy.BatchSize = dataTable.Rows.Count;
         await bulkCopy.WriteToServerAsync(dataTable);
     }
 
-    private DataTable<T> GetDataTable<T>(string destinationTableName)
+}
+
+public static class DataTableExtensions
+{
+    public static void Add(this DataTable dataTable, long id, string code, string name, string? parentCode)
     {
-        var dataTable = (DataTable<T>)_dataTables.GetOrAdd(typeof(T), _ => new DataTable<T>(destinationTableName));
-        dataTable.Rows.Clear();
-        return dataTable;
+        var row = dataTable.NewRow();
+        row["Id"] = id;
+        row["Code"] = code;
+        row["Name"] = name;
+        row["ParentCode"] = parentCode as object ?? DBNull.Value;
+        dataTable.Rows.Add(row);
     }
 }
