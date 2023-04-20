@@ -16,7 +16,7 @@ az account set --subscription <SUBSCRIPTION_ID>
 
 ## Create Function App (assuming resource group and storage account already exist)
 ```bash
-az functionapp create --resource-group ad419 --consumption-plan-location westus2 --runtime dotnet --functions-version 4 --name PullAggieEnterpriseData --storage-account ad419 --os-type Windows
+az functionapp create --resource-group ad419 --consumption-plan-location westus2 --runtime dotnet --functions-version 4 --name AD419Functions --storage-account ad419 --os-type Windows
 ```
 
 ## Run the function locally
@@ -26,5 +26,5 @@ func start
 
 ## Publish
 ```bash
-func azure functionapp publish PullAggieEnterpriseData
+func azure functionapp publish AD419Functions
 ```

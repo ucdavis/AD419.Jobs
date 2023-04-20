@@ -6,6 +6,12 @@ using Serilog.Events;
 using Serilog.Exceptions;
 using AD419Functions.Services;
 using AD419Functions.Configuration;
+using Serilog.Sinks.Elasticsearch;
+using System.Diagnostics;
+
+#if DEBUG
+Serilog.Debugging.SelfLog.Enable(msg => Debug.WriteLine(msg));
+#endif
 
 var host = new HostBuilder()
     .ConfigureAppConfiguration((hostContext, builder) =>
@@ -20,7 +26,7 @@ var host = new HostBuilder()
     {
         var loggingSection = hostContext.Configuration.GetSection("Serilog");
 
-        Log.Logger = new LoggerConfiguration()
+        var loggerConfig = new LoggerConfiguration()
             .MinimumLevel.Override("Microsoft", LogEventLevel.Warning)
             .MinimumLevel.Override("Worker", LogEventLevel.Warning)
             .MinimumLevel.Override("Host", LogEventLevel.Warning)
@@ -32,8 +38,19 @@ var host = new HostBuilder()
             .Enrich.WithProperty("Application", loggingSection.GetValue<string>("AppName"))
             .Enrich.WithProperty("AppEnvironment", loggingSection.GetValue<string>("Environment"))
             .Enrich.FromLogContext()
-            .WriteTo.Console()
-            .CreateLogger();
+            .WriteTo.Console();
+
+        // add in elastic search sink if the uri is valid
+        if (Uri.TryCreate(loggingSection.GetValue<string>("ElasticUrl"), UriKind.Absolute, out var elasticUri))
+        {
+            loggerConfig = loggerConfig.WriteTo.Elasticsearch(new ElasticsearchSinkOptions(elasticUri)
+            {
+                IndexFormat = "aspnet-ad419functions-{0:yyyy.MM}",
+                TypeName = null
+            });
+        }
+
+        Log.Logger = loggerConfig.CreateLogger();
 
         services.AddLogging(builder =>
         {
