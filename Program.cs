@@ -45,7 +45,7 @@ var host = new HostBuilder()
         {
             loggerConfig = loggerConfig.WriteTo.Elasticsearch(new ElasticsearchSinkOptions(elasticUri)
             {
-                IndexFormat = "aspnet-ad419functions-{0:yyyy.MM}",
+                IndexFormat = "aspnet-ad419-jobs-{0:yyyy.MM}",
                 TypeName = null
             });
         }

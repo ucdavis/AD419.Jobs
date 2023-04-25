@@ -90,11 +90,6 @@ public class AggieEnterpriseService
                     {
                         Eq = true
                     },
-                    // TODO: this is a workaround for skipping record with invalid name. remove this when data gets corrected
-                    Code = new StringFilterInput
-                    {
-                        Ne = "37542"
-                    },
                 },
                 "A"); // Just a placeholder. We're not interested in this portion of the response.
 
