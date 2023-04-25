@@ -4,9 +4,9 @@ using Serilog;
 using AggieEnterpriseApi;
 using AggieEnterpriseApi.Extensions;
 using Microsoft.Extensions.Options;
-using AD419Functions.Configuration;
+using AD419.Jobs.Configuration;
 
-namespace AD419Functions.Services;
+namespace AD419.Jobs.Services;
 
 public class AggieEnterpriseService
 {

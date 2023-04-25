@@ -1,0 +1,33 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net6.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <UserSecretsId>1af5cb6b-980b-448a-ad94-1677a1314f4b</UserSecretsId>
+  </PropertyGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\AD419.Jobs.Core\AD419.Jobs.Core.csproj"/>
+	</ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="AggieEnterpriseApi" Version="0.2.171" />
+    <PackageReference Include="Microsoft.Data.SqlClient" Version="5.1.1" />
+    <PackageReference Include="Microsoft.SqlServer.TransactSQL.ScriptDom" Version="150.4897.1" />
+  </ItemGroup>
+	<ItemGroup>
+		<None Update="appsettings.json">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="run.cmd">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</None>
+		<None Update="settings.job">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</None>
+    <Content Include="Scripts/**" >
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+	</ItemGroup>
+
+</Project>

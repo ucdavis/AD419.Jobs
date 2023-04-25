@@ -1,4 +1,4 @@
-namespace AD419Functions.Configuration;
+namespace AD419.Jobs.Configuration;
 
 public class SyncOptions
 {

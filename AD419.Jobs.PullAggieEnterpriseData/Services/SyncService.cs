@@ -2,11 +2,11 @@ using System.Data;
 using AggieEnterpriseApi;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Options;
-using AD419Functions.Configuration;
+using AD419.Jobs.Configuration;
 using Serilog;
-using AD419Functions.Utilities;
+using AD419.Jobs.Utilities;
 
-namespace AD419Functions.Services;
+namespace AD419.Jobs.Services;
 
 public class SyncService
 {

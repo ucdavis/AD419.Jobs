@@ -1,7 +1,7 @@
 using System.Data;
 using Microsoft.SqlServer.TransactSql.ScriptDom;
 
-namespace AD419Functions.Utilities;
+namespace AD419.Jobs.Utilities;
 
 public static class SqlHelper
 {

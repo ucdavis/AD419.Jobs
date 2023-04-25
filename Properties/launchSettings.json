@@ -1,9 +1,0 @@
-{
-  "profiles": {
-    "AD419Functions": {
-      "commandName": "Project",
-      "commandLineArgs": "--port 7030",
-      "launchBrowser": false
-    }
-  }
-}

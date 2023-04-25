@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "AD419.Jobs.PullAggieEnterpriseData": {
+      "commandName": "Project",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "development"
+      }
+    }
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "profiles": {
+    "AD419.Jobs.Core": {
+      "commandName": "Project",
+      "environmentVariables": {
+        "Key": "Value",
+        "ASPNETCORE_ENVIRONMENT": "development"
+      }
+    }
+  }
+}
