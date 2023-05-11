@@ -1,0 +1,66 @@
+# ASP.NET Core (.NET Framework)
+# Build and test ASP.NET Core projects targeting the full .NET Framework.
+# Add steps that publish symbols, save build artifacts, and more:
+# https://docs.microsoft.com/azure/devops/pipelines/languages/dotnet-core
+
+trigger:
+- main
+
+name: 1.0.$(Date:yyMM).$(build.buildId)
+
+pool:
+  vmImage: 'windows-latest'
+
+variables:
+  solution: '**/*.sln'
+  buildPlatform: 'Any CPU'
+  buildConfiguration: 'Release'
+
+stages:
+  - stage: Build
+    jobs:
+      - job:
+        steps:
+          - task: UseDotNet@2
+            displayName: "Use .NET Core 6.0.407 sdk"
+            inputs:
+              packageType: sdk
+              version: 6.0.407
+              installationPath: $(Agent.ToolsDirectory)/dotnet
+
+          - task: DotNetCoreCLI@2
+            inputs:
+              command: "restore"
+
+          - task: DotNetCoreCLI@2
+            displayName: "Build AD419.Jobs.PullAggieEnterpriseData"
+            inputs:
+              command: "build"
+              projects: "./AD419.Jobs.PullAggieEnterpriseData/AD419.Jobs.PullAggieEnterpriseData.csproj"
+              arguments: "--configuration $(BuildConfiguration) /property:Version=$(build.buildNumber)"
+
+  - stage: Publish
+    condition: eq(variables['Build.SourceBranch'], 'refs/heads/main')
+    jobs:
+      - job:
+        steps:
+          - task: UseDotNet@2
+            displayName: "Use .NET Core 6.0.407 sdk"
+            inputs:
+              packageType: sdk
+              version: 6.0.407
+              installationPath: $(Agent.ToolsDirectory)/dotnet
+
+          - task: DotNetCoreCLI@2
+            displayName: "Publish AD419.Jobs.PullAggieEnterpriseData"
+            inputs:
+              command: "publish"
+              publishWebProjects: false
+              zipAfterPublish: false
+              projects: "./AD419.Jobs.PullAggieEnterpriseData/AD419.Jobs.PullAggieEnterpriseData.csproj"
+              arguments: "--configuration $(BuildConfiguration) --output $(build.artifactstagingdirectory)/app_data/jobs/triggered"
+
+          - task: PublishBuildArtifacts@1
+            displayName: "Publish Artifact"
+            inputs:
+              PathtoPublish: "$(build.artifactstagingdirectory)"
