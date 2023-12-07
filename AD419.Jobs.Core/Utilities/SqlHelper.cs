@@ -1,7 +1,9 @@
 using System.Data;
+using Microsoft.Data.SqlClient;
 using Microsoft.SqlServer.TransactSql.ScriptDom;
+using Serilog;
 
-namespace AD419.Jobs.Utilities;
+namespace AD419.Jobs.Core.Utilities;
 
 public static class SqlHelper
 {
@@ -49,6 +51,22 @@ public static class SqlHelper
         foreach (var batch in GetBatches(textReader))
         {
             yield return batch;
+        }
+    }
+
+    public static async Task ExecuteScript(string fileName, SqlConnection connection, SqlTransaction? transaction = null)
+    {
+        Log.Information("Executing script {FileName}", fileName);
+        // TODO: use connection.CreateBatch() once it is implemented for SqlConnection
+        foreach (var script in GetBatchesFromFile(fileName))
+        {
+            using var command = connection.CreateCommand();
+            command.CommandText = script;
+            if (transaction != null)
+            {
+                command.Transaction = transaction;
+            }
+            await command.ExecuteNonQueryAsync();
         }
     }
 }

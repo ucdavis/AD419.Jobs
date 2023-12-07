@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "AD419.Jobs.PullNifaData": {
+      "commandName": "Project",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "development"
+      }
+    }
+  }
+}

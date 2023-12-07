@@ -1,4 +1,4 @@
-
+﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.31903.59
@@ -15,6 +15,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AD419.Jobs.Core", "AD419.Jobs.Core\AD419.Jobs.Core.csproj", "{C159B50B-9715-4942-BDBF-D2A35A0AA4C6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AD419.Jobs.PullNifaData", "AD419.Jobs.PullNifaData\AD419.Jobs.PullNifaData.csproj", "{E4929158-C83C-4521-A6A8-AC6A2CD6FAD6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,6 +35,10 @@ Global
 		{C159B50B-9715-4942-BDBF-D2A35A0AA4C6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C159B50B-9715-4942-BDBF-D2A35A0AA4C6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C159B50B-9715-4942-BDBF-D2A35A0AA4C6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E4929158-C83C-4521-A6A8-AC6A2CD6FAD6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E4929158-C83C-4521-A6A8-AC6A2CD6FAD6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E4929158-C83C-4521-A6A8-AC6A2CD6FAD6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E4929158-C83C-4521-A6A8-AC6A2CD6FAD6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{C159B50B-9715-4942-BDBF-D2A35A0AA4C6} = {D142B944-6E29-4C5A-BC7F-9610EEECF3CF}
