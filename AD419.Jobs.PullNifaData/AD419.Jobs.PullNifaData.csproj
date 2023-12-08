@@ -8,10 +8,14 @@
     <UserSecretsId>1af5cb6b-980b-448a-ad94-1677a1314f4b</UserSecretsId>
   </PropertyGroup>
 	<ItemGroup>
-		<ProjectReference Include="..\AD419.Jobs.Core\AD419.Jobs.Core.csproj"/>
+		<ProjectReference Include="..\AD419.Jobs.Core\AD419.Jobs.Core.csproj" />
 	</ItemGroup>
   <ItemGroup>
     <PackageReference Include="AggieEnterpriseApi" Version="0.2.171" />
+    <PackageReference Include="CsvHelper" Version="30.0.1" />
+    <PackageReference Include="Microsoft.Data.SqlClient" Version="5.1.1" />
+    <PackageReference Include="Microsoft.SqlServer.TransactSQL.ScriptDom" Version="150.4897.1" />
+    <PackageReference Include="SSH.NET" Version="2023.0.0" />
   </ItemGroup>
 	<ItemGroup>
 		<None Update="appsettings.json">
@@ -23,7 +27,7 @@
 		<None Update="settings.job">
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</None>
-    <Content Include="Scripts/**" >
+    <Content Include="Scripts/**">
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
 	</ItemGroup>

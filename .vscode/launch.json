@@ -5,14 +5,30 @@
       // Use IntelliSense to find out which attributes exist for C# debugging
       // Use hover for the description of the existing attributes
       // For further information visit https://github.com/OmniSharp/omnisharp-vscode/blob/master/debugger-launchjson.md
-      "name": ".NET Core Launch (console)",
+      "name": "Launch (AD419.Jobs.PullAggieEnterpriseData)",
       "type": "coreclr",
       "request": "launch",
-      "preLaunchTask": "build",
+      "preLaunchTask": "build-AD419.Jobs.PullAggieEnterpriseData",
       // If you have changed target frameworks, make sure to update the program path.
       "program": "${workspaceFolder}/AD419.Jobs.PullAggieEnterpriseData/bin/Debug/net6.0/AD419.Jobs.PullAggieEnterpriseData.dll",
       "args": [],
       "cwd": "${workspaceFolder}/AD419.Jobs.PullAggieEnterpriseData",
+      // For more information about the 'console' field, see https://aka.ms/VSCode-CS-LaunchJson-Console
+      "console": "internalConsole",
+      "stopAtEntry": false
+    },
+    {
+      // Use IntelliSense to find out which attributes exist for C# debugging
+      // Use hover for the description of the existing attributes
+      // For further information visit https://github.com/OmniSharp/omnisharp-vscode/blob/master/debugger-launchjson.md
+      "name": "Launch (AD419.Jobs.PullNifaData)",
+      "type": "coreclr",
+      "request": "launch",
+      "preLaunchTask": "build-AD419.Jobs.PullNifaData",
+      // If you have changed target frameworks, make sure to update the program path.
+      "program": "${workspaceFolder}/AD419.Jobs.PullNifaData/bin/Debug/net6.0/AD419.Jobs.PullNifaData.dll",
+      "args": [],
+      "cwd": "${workspaceFolder}/AD419.Jobs.PullNifaData",
       // For more information about the 'console' field, see https://aka.ms/VSCode-CS-LaunchJson-Console
       "console": "internalConsole",
       "stopAtEntry": false
