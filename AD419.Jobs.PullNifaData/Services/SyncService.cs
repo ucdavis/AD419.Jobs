@@ -142,15 +142,14 @@ public class SyncService
 public static class DataTableExtensions
 {
     public static void AddModelData<T>(this DataTable dataTable, T model)
+        where T: class
     {
         var row = dataTable.NewRow();
         var properties = typeof(T).GetProperties();
         foreach (var property in properties)
         {
-            // TODO: update reflection here to use cached fast delegates
-
             // SqlBulkCopy needs nulls to be represented by DBNull.Value
-            var value = property.GetValue(model) ?? DBNull.Value;
+            var value = property.FastGetValue(model) ?? DBNull.Value;
             row[property.Name] = value;
         }
         dataTable.Rows.Add(row);
