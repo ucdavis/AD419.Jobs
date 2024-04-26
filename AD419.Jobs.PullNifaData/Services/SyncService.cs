@@ -11,6 +11,8 @@ using CsvHelper.Configuration;
 using System.Text.RegularExpressions;
 using AD419.Jobs.Models;
 using AD419.Jobs.Core.Extensions;
+using AD419.Jobs.PullNifaData.Attributes;
+using AD419.Jobs.PullNifaData.Extensions;
 
 namespace AD419.Jobs.PullNifaData.Services;
 
@@ -26,7 +28,7 @@ public class SyncService
         _connectionStrings = connectionStrings.Value;
         _syncOptions = syncOptions.Value;
         _sshService = sshService;
-        _nifaGlDataTable = CreateNifaGlDataTable();
+        _nifaGlDataTable = CreateDataTable<NifaGlModel>();
     }
 
     public async Task Run()
@@ -34,11 +36,9 @@ public class SyncService
         Log.Information("Starting sync");
         using var connection = new SqlConnection(_connectionStrings.DefaultConnection);
         await connection.OpenAsync();
-        Log.Information("Creating temp tables");
-        await SqlHelper.ExecuteScript("Scripts/Init_Temp_Tables.sql", connection);
 
         var filePaths = _sshService.ListFiles("/")
-            .Where(f => Path.GetFileName(f).StartsWith("NIFA_GL"))
+            .Where(f => Regex.IsMatch(Path.GetFileName(f), $@"NIFA_(GL|PGM_(AWARD|EMPLOYEE|EXPENDITURE|PROJECT))_Incremental_[0-9]{{8}}_[0-9]{{6}}\.csv"))
             .OrderBy(x => x);
 
         foreach (var filePath in filePaths)
@@ -59,7 +59,19 @@ public class SyncService
                 switch (Path.GetFileName(filePath))
                 {
                     case string s when Regex.IsMatch(s, @"NIFA_GL_.*?\.csv"):
-                        await SyncNifaGlData(connection, transaction, csv);
+                        await SyncData<NifaGlModel>(connection, transaction, csv, "UCD_NIFA_GL");
+                        break;
+                    case string s when Regex.IsMatch(s, @"NIFA_PGM_AWARD_.*?\.csv"):
+                        await SyncData<NifaPgmAwardModel>(connection, transaction, csv, "UCD_NIFA_PGM_AWARD");
+                        break;
+                    case string s when Regex.IsMatch(s, @"NIFA_PGM_EMPLOYEE_.*?\.csv"):
+                        await SyncData<NifaPgmEmployeeModel>(connection, transaction, csv, "UCD_NIFA_PGM_EMPLOYEE");
+                        break;
+                    case string s when Regex.IsMatch(s, @"NIFA_PGM_EXPENDITURE_.*?\.csv"):
+                        await SyncData<NifaPgmExpenditureModel>(connection, transaction, csv, "UCD_NIFA_PGM_EXPENDITURE");
+                        break;
+                    case string s when Regex.IsMatch(s, @"NIFA_PGM_PROJECT_.*?\.csv"):
+                        await SyncData<NifaPgmProjectModel>(connection, transaction, csv, "UCD_NIFA_PGM_PROJECT");
                         break;
                     default:
                         throw new Exception($"Unknown file type {Path.GetFileName(filePath)}");
@@ -85,115 +97,62 @@ public class SyncService
         }
     }
 
-    private async Task SyncNifaGlData(SqlConnection connection, SqlTransaction transaction, CsvReader csv)
+    private async Task SyncData<T>(SqlConnection connection, SqlTransaction transaction, CsvReader csv, string tableName)
     {
-        Log.Information("Reading NIFA_GL data");
-        var records = csv.GetRecords<NifaGlModel>();
+        var dataTable = CreateDataTable<T>();
+        Log.Information("Reading {TableName} data", tableName);
+        var records = csv.GetRecords<T>();
         foreach (var record in records)
         {
-            _nifaGlDataTable.AddNifaGlModel(record);
+            _nifaGlDataTable.AddModelData(record);
         }
-        Log.Information("Writing NIFA_GL data to temp table");
-        await SyncData(connection, transaction, _nifaGlDataTable, "#UCD_NIFA_GL");
-        Log.Information("Merging NIFA_GL data");
-        await SqlHelper.ExecuteScript("Scripts/NIFA_GL_Merge_Temp_Data.sql", connection, transaction);
-    }
-
-    private async Task SyncData(SqlConnection connection, SqlTransaction transaction, DataTable dataTable, string tableName)
-    {
+        Log.Information("Creating temp table {TableName}", tableName);
+        await SqlHelper.ExecuteScript($"Scripts/{tableName}_init.sql", connection);
+        Log.Information("Writing {TableName} data to temp table", tableName);
         var bulkCopy = new SqlBulkCopy(connection, SqlBulkCopyOptions.Default, transaction)
         {
             DestinationTableName = tableName,
             BatchSize = _syncOptions.BulkCopyBatchSize
         };
         await bulkCopy.WriteToServerAsync(dataTable);
+        Log.Information("Merging {TableName} data", tableName);
+        await SqlHelper.ExecuteScript($"Scripts/{tableName}_merge.sql", connection, transaction);
     }
 
-    private static DataTable CreateNifaGlDataTable()
+    private static DataTable CreateDataTable<T>()
     {
-        DataTable dataTable = new DataTable();
+        var dataTable = new DataTable();
 
-        dataTable.Columns.Add("AccountingYear", typeof(int));
-        dataTable.Columns.Add("PostedYear", typeof(int));
-        dataTable.Columns.Add("Period", typeof(string));
-        dataTable.Columns.Add("AccountingDate", typeof(DateTime));
-        dataTable.Columns.Add("PostedDate", typeof(DateTime));
-        dataTable.Columns.Add("JournalCategory", typeof(string));
-        dataTable.Columns.Add("JournalSource", typeof(string));
-        dataTable.Columns.Add("AccountCombination", typeof(string));
-        dataTable.Columns.Add("Entity", typeof(string));
-        dataTable.Columns.Add("EntityDesctiption", typeof(string));
-        dataTable.Columns.Add("Fund", typeof(string));
-        dataTable.Columns.Add("FundDescription", typeof(string));
-        dataTable.Columns.Add("ParentFund", typeof(string));
-        dataTable.Columns.Add("ParentFundDescription", typeof(string));
-        dataTable.Columns.Add("FinancialDepartmentParentC", typeof(string));
-        dataTable.Columns.Add("FinancialDepartmentParentC_Description", typeof(string));
-        dataTable.Columns.Add("FinancialDepartment", typeof(string));
-        dataTable.Columns.Add("FinancialDepartmentDescription", typeof(string));
-        dataTable.Columns.Add("NaturalAccount", typeof(string));
-        dataTable.Columns.Add("NaturalAccountDescription", typeof(string));
-        dataTable.Columns.Add("NatruralAccountType", typeof(string));
-        dataTable.Columns.Add("Purpose", typeof(string));
-        dataTable.Columns.Add("PurposeDescription", typeof(string));
-        dataTable.Columns.Add("Program", typeof(string));
-        dataTable.Columns.Add("ProgramDescription", typeof(string));
-        dataTable.Columns.Add("Project", typeof(string));
-        dataTable.Columns.Add("ProjectDescription", typeof(string));
-        dataTable.Columns.Add("Activity", typeof(string));
-        dataTable.Columns.Add("ActivityDescription", typeof(string));
-        dataTable.Columns.Add("InterEntity", typeof(string));
-        dataTable.Columns.Add("GL_Future1", typeof(string));
-        dataTable.Columns.Add("GL_Future2", typeof(string));
-        dataTable.Columns.Add("DebitAmount", typeof(decimal));
-        dataTable.Columns.Add("CreditAmount", typeof(decimal));
+        // Column order is important, since SqlBulkCopy works by ordinal position, not column name
+        foreach (var property in typeof(T).GetOrderedProperties())
+        {
+            // SqlBulkCopy's type conversion doesn't understand Nullable<> types, so unwrap them
+            var propertyType = property.PropertyType.IsGenericType && property.PropertyType.GetGenericTypeDefinition() == typeof(Nullable<>)
+                ? Nullable.GetUnderlyingType(property.PropertyType)
+                : property.PropertyType;
+            
+            dataTable.Columns.Add(property.Name, propertyType!);
+        }
 
         return dataTable;
     }
+
 }
-
-
-
 
 public static class DataTableExtensions
 {
-    public static void AddNifaGlModel(this DataTable dataTable, NifaGlModel nifaGlModel)
+    public static void AddModelData<T>(this DataTable dataTable, T model)
     {
         var row = dataTable.NewRow();
-        row["AccountingYear"] = nifaGlModel.AccountingYear;
-        row["PostedYear"] = nifaGlModel.PostedYear as object ?? DBNull.Value;
-        row["Period"] = nifaGlModel.Period;
-        row["AccountingDate"] = nifaGlModel.AccountingDate as object ?? DBNull.Value;
-        row["PostedDate"] = nifaGlModel.PostedDate as object ?? DBNull.Value;
-        row["JournalCategory"] = nifaGlModel.JournalCategory;
-        row["JournalSource"] = nifaGlModel.JournalSource;
-        row["AccountCombination"] = nifaGlModel.AccountCombination;
-        row["Entity"] = nifaGlModel.Entity;
-        row["EntityDesctiption"] = nifaGlModel.EntityDesctiption;
-        row["Fund"] = nifaGlModel.Fund;
-        row["FundDescription"] = nifaGlModel.FundDescription;
-        row["ParentFund"] = nifaGlModel.ParentFund;
-        row["ParentFundDescription"] = nifaGlModel.ParentFundDescription;
-        row["FinancialDepartmentParentC"] = nifaGlModel.FinancialDepartmentParentC;
-        row["FinancialDepartmentParentC_Description"] = nifaGlModel.FinancialDepartmentParentC_Description;
-        row["FinancialDepartment"] = nifaGlModel.FinancialDepartment;
-        row["FinancialDepartmentDescription"] = nifaGlModel.FinancialDepartmentDescription;
-        row["NaturalAccount"] = nifaGlModel.NaturalAccount;
-        row["NaturalAccountDescription"] = nifaGlModel.NaturalAccountDescription;
-        row["NatruralAccountType"] = nifaGlModel.NatruralAccountType;
-        row["Purpose"] = nifaGlModel.Purpose;
-        row["PurposeDescription"] = nifaGlModel.PurposeDescription;
-        row["Program"] = nifaGlModel.Program;
-        row["ProgramDescription"] = nifaGlModel.ProgramDescription;
-        row["Project"] = nifaGlModel.Project;
-        row["ProjectDescription"] = nifaGlModel.ProjectDescription;
-        row["Activity"] = nifaGlModel.Activity;
-        row["ActivityDescription"] = nifaGlModel.ActivityDescription;
-        row["InterEntity"] = nifaGlModel.InterEntity;
-        row["GL_Future1"] = nifaGlModel.GL_Future1;
-        row["GL_Future2"] = nifaGlModel.GL_Future2;
-        row["DebitAmount"] = nifaGlModel.DebitAmount as object ?? DBNull.Value;
-        row["CreditAmount"] = nifaGlModel.CreditAmount as object ?? DBNull.Value;
+        var properties = typeof(T).GetProperties();
+        foreach (var property in properties)
+        {
+            // TODO: update reflection here to use cached fast delegates
+
+            // SqlBulkCopy needs nulls to be represented by DBNull.Value
+            var value = property.GetValue(model) ?? DBNull.Value;
+            row[property.Name] = value;
+        }
         dataTable.Rows.Add(row);
     }
 }

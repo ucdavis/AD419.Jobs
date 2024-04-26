@@ -37,7 +37,7 @@ CREATE TABLE
     CreditAmount decimal(18, 2)
   );
 
-CREATE UNIQUE CLUSTERED INDEX PK_UcdNifaGlNew ON #UCD_NIFA_GL (
+CREATE UNIQUE CLUSTERED INDEX PK_TempUcdNifaGl ON #UCD_NIFA_GL (
   AccountingDate,
   PostedDate,
   JournalSource,
