@@ -55,7 +55,7 @@ public class NifaPgmExpenditureModel
 
     [Name("Project Burden Cost Rate")]
     [Order]
-    public decimal ProjectBurdenCostRate { get; set; }
+    public decimal? ProjectBurdenCostRate { get; set; }
 
     [Name("Project Task Fund DFF")]
     [Order]

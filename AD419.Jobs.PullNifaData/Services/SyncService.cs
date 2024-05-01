@@ -21,14 +21,12 @@ public class SyncService
     private readonly ConnectionStrings _connectionStrings;
     private readonly SyncOptions _syncOptions;
     private readonly ISshService _sshService;
-    private readonly DataTable _nifaGlDataTable;
 
     public SyncService(IOptions<ConnectionStrings> connectionStrings, IOptions<SyncOptions> syncOptions, ISshService sshService)
     {
         _connectionStrings = connectionStrings.Value;
         _syncOptions = syncOptions.Value;
         _sshService = sshService;
-        _nifaGlDataTable = CreateDataTable<NifaGlModel>();
     }
 
     public async Task Run()
@@ -98,13 +96,14 @@ public class SyncService
     }
 
     private async Task SyncData<T>(SqlConnection connection, SqlTransaction transaction, CsvReader csv, string tableName)
+        where T: class
     {
         var dataTable = CreateDataTable<T>();
         Log.Information("Reading {TableName} data", tableName);
         var records = csv.GetRecords<T>();
         foreach (var record in records)
         {
-            _nifaGlDataTable.AddModelData(record);
+            dataTable.AddModelData(record);
         }
         Log.Information("Creating temp table {TableName}", tableName);
         await SqlHelper.ExecuteScript($"Scripts/{tableName}_init.sql", connection);
