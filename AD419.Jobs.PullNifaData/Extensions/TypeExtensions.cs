@@ -16,14 +16,4 @@ public static class TypeExtensions
             .Where(p => Attribute.IsDefined(p, typeof(OrderAttribute)))
             .OrderBy(p => ((OrderAttribute)p.GetCustomAttributes(typeof(OrderAttribute), false).Single()).Order);
     }
-
-    /// <summary>
-    /// Fast alternative to <seealso cref="PropertyInfo.GetValue(object?)"/>
-    /// </summary>
-    public static object FastGetValue(this PropertyInfo propertyInfo, object obj)
-    {
-        // TypeAccessors are cached, so it's okay to call this in tight loops
-        var accessor = TypeAccessor.Create(propertyInfo.DeclaringType);
-        return accessor[obj, propertyInfo.Name];
-    }
 }

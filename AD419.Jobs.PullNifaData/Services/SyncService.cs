@@ -13,6 +13,7 @@ using AD419.Jobs.Models;
 using AD419.Jobs.Core.Extensions;
 using AD419.Jobs.PullNifaData.Attributes;
 using AD419.Jobs.PullNifaData.Extensions;
+using FastMember;
 
 namespace AD419.Jobs.PullNifaData.Services;
 
@@ -96,7 +97,7 @@ public class SyncService
     }
 
     private async Task SyncData<T>(SqlConnection connection, SqlTransaction transaction, CsvReader csv, string tableName)
-        where T: class
+        where T : class
     {
         var dataTable = CreateDataTable<T>();
         Log.Information("Reading {TableName} data", tableName);
@@ -129,7 +130,7 @@ public class SyncService
             var propertyType = property.PropertyType.IsGenericType && property.PropertyType.GetGenericTypeDefinition() == typeof(Nullable<>)
                 ? Nullable.GetUnderlyingType(property.PropertyType)
                 : property.PropertyType;
-            
+
             dataTable.Columns.Add(property.Name, propertyType!);
         }
 
@@ -141,14 +142,16 @@ public class SyncService
 public static class DataTableExtensions
 {
     public static void AddModelData<T>(this DataTable dataTable, T model)
-        where T: class
+        where T : class
     {
+        // TypeAccessors are cached, so it's okay to call this in tight loops
+        var accessor = TypeAccessor.Create(typeof(T));
         var row = dataTable.NewRow();
         var properties = typeof(T).GetProperties();
         foreach (var property in properties)
         {
             // SqlBulkCopy needs nulls to be represented by DBNull.Value
-            var value = property.FastGetValue(model) ?? DBNull.Value;
+            var value = accessor[model, property.Name] ?? DBNull.Value;
             row[property.Name] = value;
         }
         dataTable.Rows.Add(row);
