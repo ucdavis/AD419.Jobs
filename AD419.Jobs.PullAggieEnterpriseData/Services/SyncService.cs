@@ -60,7 +60,7 @@ public class SyncService
 
     private async Task SyncFinancialDepartmentValues(SqlConnection connection, SqlTransaction transaction)
     {
-        await SqlHelper.ExecuteScript("Scripts/ErpFinancialDepartmentValues_Start.sql", connection, transaction);
+        await SqlHelper.ExecuteScriptFromFile("Scripts/ErpFinancialDepartmentValues_Start.sql", connection, transaction);
 
         var i = 0;
         await foreach (var item in _aggieEnterpriseService.GetFinancialDepartmentValues())
@@ -82,12 +82,12 @@ public class SyncService
             _dataTable.Rows.Clear();
         }
 
-        await SqlHelper.ExecuteScript("Scripts/ErpFinancialDepartmentValues_Finish.sql", connection, transaction);
+        await SqlHelper.ExecuteScriptFromFile("Scripts/ErpFinancialDepartmentValues_Finish.sql", connection, transaction);
     }
 
     private async Task SyncFundValues(SqlConnection connection, SqlTransaction transaction)
     {
-        await SqlHelper.ExecuteScript("Scripts/ErpFundValues_Start.sql", connection, transaction);
+        await SqlHelper.ExecuteScriptFromFile("Scripts/ErpFundValues_Start.sql", connection, transaction);
 
         var i = 0;
         await foreach (var item in _aggieEnterpriseService.GetFundValues())
@@ -109,12 +109,12 @@ public class SyncService
             _dataTable.Rows.Clear();
         }
 
-        await SqlHelper.ExecuteScript("Scripts/ErpFundValues_Finish.sql", connection, transaction);
+        await SqlHelper.ExecuteScriptFromFile("Scripts/ErpFundValues_Finish.sql", connection, transaction);
     }
 
     private async Task SyncAccountValues(SqlConnection connection, SqlTransaction transaction)
     {
-        await SqlHelper.ExecuteScript("Scripts/ErpAccountValues_Start.sql", connection, transaction);
+        await SqlHelper.ExecuteScriptFromFile("Scripts/ErpAccountValues_Start.sql", connection, transaction);
 
         var i = 0;
         await foreach (var item in _aggieEnterpriseService.GetAccountValues())
@@ -136,12 +136,12 @@ public class SyncService
             _dataTable.Rows.Clear();
         }
 
-        await SqlHelper.ExecuteScript("Scripts/ErpAccountValues_Finish.sql", connection, transaction);
+        await SqlHelper.ExecuteScriptFromFile("Scripts/ErpAccountValues_Finish.sql", connection, transaction);
     }
 
     private async Task SyncProjectValues(SqlConnection connection, SqlTransaction transaction)
     {
-        await SqlHelper.ExecuteScript("Scripts/ErpProjectValues_Start.sql", connection, transaction);
+        await SqlHelper.ExecuteScriptFromFile("Scripts/ErpProjectValues_Start.sql", connection, transaction);
 
         var i = 0;
         await foreach (var item in _aggieEnterpriseService.GetProjectValues())
@@ -163,7 +163,7 @@ public class SyncService
             _dataTable.Rows.Clear();
         }
 
-        await SqlHelper.ExecuteScript("Scripts/ErpProjectValues_Finish.sql", connection, transaction);
+        await SqlHelper.ExecuteScriptFromFile("Scripts/ErpProjectValues_Finish.sql", connection, transaction);
     }
 
     private static async Task SyncDataTable(SqlConnection connection, DataTable dataTable, SqlTransaction transaction, string tableName)

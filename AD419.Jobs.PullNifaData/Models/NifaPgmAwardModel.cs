@@ -1,91 +1,91 @@
 using CsvHelper.Configuration.Attributes;
 using AD419.Jobs.PullNifaData.Attributes;
 
-namespace AD419.Jobs.Models;
+namespace AD419.Jobs.PullNifaData.Models;
 
 public class NifaPgmAwardModel
 {
     [Name("Run Date")]
-    [Order]
+    [ColumnOrder]
     public DateTime RunDate { get; set; }
 
     [Name("Award ID")]
-    [Order]
+    [ColumnOrder]
     public string AwardID { get; set; } = "";
 
     [Name("Award Number")]
-    [Order]
+    [ColumnOrder]
     public string AwardNumber { get; set; } = "";
 
     [Name("Award Type")]
-    [Order]
+    [ColumnOrder]
     public string AwardType { get; set; } = "";
 
     [Name("Award Purpose")]
-    [Order]
+    [ColumnOrder]
     public string AwardPurpose { get; set; } = "";
 
     [Name("Award Start Date")]
-    [Order]
+    [ColumnOrder]
     public DateTime? AwardStartDate { get; set; }
 
     [Name("Award End Date")]
-    [Order]
+    [ColumnOrder]
     public DateTime? AwardEndDate { get; set; }
 
     [Name("Award Funding Amount")]
-    [Order]
+    [ColumnOrder]
     public decimal AwardFundingAmount { get; set; }
 
     [Name("Sponsor / Customer Name")]
-    [Order]
+    [ColumnOrder]
     public string Sponsor_CustomerName { get; set; } = "";
 
     [Name("Sponsor / Customer Number")]
-    [Order]
+    [ColumnOrder]
     public string Sponsor_CustomerNumber { get; set; } = "";
 
     [Name("UCOP Sponsor Code")]
-    [Order]
+    [ColumnOrder]
     public int UCOPSponsorCode { get; set; }
 
     [Name("Assistance Listing Numbers")]
-    [Order]
+    [ColumnOrder]
     public string AssistanceListingNumbers { get; set; } = "";
 
     [Name("Customer Class")]
-    [Order]
+    [ColumnOrder]
     public string CustomerClass { get; set; } = "";
 
     [Name("Terms & Conditions-Cost Share")]
-    [Order]
+    [ColumnOrder]
     public string Terms_Conditions_CostShare { get; set; } = "";
 
     [Name("Terms & Conditions-NSF Field of Study")]
-    [Order]
+    [ColumnOrder]
     public string Terms_Conditions_NSFFieldOfStudy { get; set; } = "";
 
     [Name("Invoice/LOC (Award Document Number)")]
-    [Order]
+    [ColumnOrder]
     public string Invoice_LOC_AwardDocumentNumber { get; set; } = "";
 
     [Name("LOC Number(Sponsor LOC Number)")]
-    [Order]
+    [ColumnOrder]
     public string LOCNumber_SponsorLOCNumber { get; set; } = "";
 
     [Name("Federal Prime Name")]
-    [Order]
+    [ColumnOrder]
     public string FederalPrimeName { get; set; } = "";
 
     [Name("Federal Prime Number")]
-    [Order]
+    [ColumnOrder]
     public string FederalPrimeNumber { get; set; } = "";
 
     [Name("NIFA Accession Number")]
-    [Order]
+    [ColumnOrder]
     public string NIFAAccessionNumber { get; set; } = "";
 
     [Name("NIFA Project Number")]
-    [Order]
+    [ColumnOrder]
     public string NIFAProjectNumber { get; set; } = "";
 }

@@ -1,110 +1,123 @@
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using AD419.Jobs.PullNifaData.Attributes;
 using CsvHelper.Configuration.Attributes;
 
-namespace AD419.Jobs.Models;
+namespace AD419.Jobs.PullNifaData.Models;
 
+[Table("UCD_NIFA_GL")]
 public class NifaGlModel
 {
     [Name("ACCOUNTING YEAR")]
-    [Order]
+    [ColumnOrder]
+    [Required]
     public int AccountingYear { get; set; }
     [Name("POSTED YEAR")]
-    [Order]
+    [ColumnOrder]
     public int? PostedYear { get; set; }
     [Name("PERIOD")]
-    [Order]
+    [ColumnOrder]
+    [Required]
     public string Period { get; set; } = "";
     [Name("ACCOUNTING DATE")]
-    [Order]
+    [ColumnOrder]
+    [KeyOrder(0)]
     public DateTime? AccountingDate { get; set; }
     [Name("POSTED DATE")]
-    [Order]
+    [ColumnOrder]
+    [KeyOrder(1)]
     public DateTime? PostedDate { get; set; }
     [Name("JOURNAL CATEGORY")]
-    [Order]
+    [ColumnOrder]
+    [KeyOrder(3)]
     public string JournalCategory { get; set; } = "";
     [Name("JOURNAL SOURCE")]
-    [Order]
+    [ColumnOrder]
+    [KeyOrder(2)]
     public string JournalSource { get; set; } = "";
     [Name("ACCOUNT COMBINATION")]
-    [Order]
+    [ColumnOrder]
+    [KeyOrder(4)]
+    [Required]
     public string AccountCombination { get; set; } = "";
     [Name("ENTITY")]
-    [Order]
+    [ColumnOrder]
     public string Entity { get; set; } = "";
     [Name("ENTITY DESCRIPTION")]
-    [Order]
+    [ColumnOrder]
     public string EntityDesctiption { get; set; } = "";
     [Name("FUND")]
-    [Order]
+    [ColumnOrder]
     public string Fund { get; set; } = "";
     [Name("FUND DESCRIPTION")]
-    [Order]
+    [ColumnOrder]
     public string FundDescription { get; set; } = "";
     [Name("PARENT FUND")]
-    [Order]
+    [ColumnOrder]
     public string ParentFund { get; set; } = "";
     [Name("PARENT FUND DESCRIPTION")]
-    [Order]
+    [ColumnOrder]
     public string ParentFundDescription { get; set; } = "";
     [Name("FINANCIAL DEPARTMENT PARENT C")]
-    [Order]
+    [ColumnOrder]
     public string FinancialDepartmentParentC { get; set; } = "";
     [Name("FINANCIAL DEPARTMENT PARENT C DESCRIPTION")]
-    [Order]
+    [ColumnOrder]
     public string FinancialDepartmentParentC_Description { get; set; } = "";
     [Name("FINANCIAL DEPARTMENT")]
-    [Order]
+    [ColumnOrder]
     public string FinancialDepartment { get; set; } = "";
     [Name("FINANCIAL DEPARTMENT DESCRIPTION")]
-    [Order]
+    [ColumnOrder]
     public string FinancialDepartmentDescription { get; set; } = "";
     [Name("NATURAL ACCOUNT")]
-    [Order]
+    [ColumnOrder]
     public string NaturalAccount { get; set; } = "";
     [Name("NATURAL ACCOUNT DESCRIPTION")]
-    [Order]
+    [ColumnOrder]
     public string NaturalAccountDescription { get; set; } = "";
     [Name("NATURAL ACCOUNT TYPE")]
-    [Order]
+    [ColumnOrder]
     public string NatruralAccountType { get; set; } = "";
     [Name("PURPOSE")]
-    [Order]
+    [ColumnOrder]
     public string Purpose { get; set; } = "";
     [Name("PURPOSE DESCRIPTION")]
-    [Order]
+    [ColumnOrder]
     public string PurposeDescription { get; set; } = "";
     [Name("PROGRAM")]
-    [Order]
+    [ColumnOrder]
     public string Program { get; set; } = "";
     [Name("PROGRAM DESCRIPTION")]
-    [Order]
+    [ColumnOrder]
     public string ProgramDescription { get; set; } = "";
     [Name("PROJECT")]
-    [Order]
+    [ColumnOrder]
     public string Project { get; set; } = "";
     [Name("PROJECT DESCRIPTION")]
-    [Order]
+    [ColumnOrder]
     public string ProjectDescription { get; set; } = "";
     [Name("ACTIVITY")]
-    [Order]
+    [ColumnOrder]
     public string Activity { get; set; } = "";
     [Name("ACTIVITY DESCRIPTION")]
-    [Order]
+    [ColumnOrder]
     public string ActivityDescription { get; set; } = "";
     [Name("INTER ENTITY")]
-    [Order]
+    [ColumnOrder]
     public string InterEntity { get; set; } = "";
     [Name("GL FUTURE 1")]
-    [Order]
+    [ColumnOrder]
     public string GL_Future1 { get; set; } = "";
     [Name("GL FUTURE 2")]
-    [Order]
+    [ColumnOrder]
     public string GL_Future2 { get; set; } = "";
     [Name("DEBIT AMOUNT")]
-    [Order]
+    [ColumnOrder]
+    [KeyOrder(5)]
     public decimal? DebitAmount { get; set; }
     [Name("CREDIT AMOUNT")]
-    [Order]
+    [ColumnOrder]
+    [KeyOrder(6)]
     public decimal? CreditAmount { get; set; }
 }

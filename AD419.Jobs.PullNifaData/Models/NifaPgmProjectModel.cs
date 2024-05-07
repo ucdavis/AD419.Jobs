@@ -1,59 +1,59 @@
 using AD419.Jobs.PullNifaData.Attributes;
 using CsvHelper.Configuration.Attributes;
 
-namespace AD419.Jobs.Models;
+namespace AD419.Jobs.PullNifaData.Models;
 
 public class NifaPgmProjectModel
 {
     [Name("Run Date")]
-    [Order]
+    [ColumnOrder]
     public DateTime RunDate { get; set; }
 
     [Name("Project ID")]
-    [Order]
+    [ColumnOrder]
     public string ProjectID { get; set; } = "";
 
     [Name("Award ID")]
-    [Order]
+    [ColumnOrder]
     public string AwardID { get; set; } = "";
 
     [Name("Project Legal Entity")]
-    [Order]
+    [ColumnOrder]
     public string ProjectLegalEntity { get; set; } = "";
 
     [Name("Project Owning Organization")]
-    [Order]
+    [ColumnOrder]
     public string ProjectOwningOrganization { get; set; } = "";
 
     [Name("Project Number")]
-    [Order]
+    [ColumnOrder]
     public string ProjectNumber { get; set; } = "";
 
     [Name("Project Name")]
-    [Order]
+    [ColumnOrder]
     public string ProjectName { get; set; } = "";
 
     [Name("Project Type")]
-    [Order]
+    [ColumnOrder]
     public string ProjectType { get; set; } = "";
 
     [Name("Project Start Date")]
-    [Order]
+    [ColumnOrder]
     public DateTime? ProjectStartDate { get; set; }
 
     [Name("Project End Date")]
-    [Order]
+    [ColumnOrder]
     public DateTime? ProjectEndDate { get; set; }
 
     [Name("Project Closed Date")]
-    [Order]
+    [ColumnOrder]
     public DateTime? ProjectClosedDate { get; set; }
 
     [Name("Project Creation Date")]
-    [Order]
+    [ColumnOrder]
     public DateTime? ProjectCreationDate { get; set; }
 
     [Name("Project Last Update Date")]
-    [Order]
+    [ColumnOrder]
     public DateTime? ProjectLastUpdateDate { get; set; }
 }

@@ -1,0 +1,18 @@
+@model AD419.Jobs.PullNifaData.Models.TableModel;
+
+IF OBJECT_ID (N'dbo.#@Model.Name', N'U') IS NULL BEGIN
+  
+  CREATE TABLE #@Model.Name (
+    @{string.Join($",{Environment.NewLine}    ", Model.Columns
+      .OrderBy(c => c.ColumnOrder)
+      .Select(c => $"[{c.Name}] {c.SqlType}"));}
+  );
+
+  CREATE UNIQUE CLUSTERED INDEX PK_Temp@Model.Name ON #@Model.Name (
+    @{string.Join($",{Environment.NewLine}    ", Model.Columns
+        .Where(c => c.KeyOrder.HasValue)
+        .OrderBy(c => c.KeyOrder)
+        .Select(c => $"[{c.Name}]"));}
+  );
+
+END
