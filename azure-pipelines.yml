@@ -29,8 +29,12 @@ stages:
               installationPath: $(Agent.ToolsDirectory)/dotnet
 
           - task: DotNetCoreCLI@2
+            displayName: "Restore"
             inputs:
               command: "restore"
+              majorVersion: 6
+              minorVersion: 0
+              patchVersion: 421
 
           - task: DotNetCoreCLI@2
             displayName: "Build AD419.Jobs.PullAggieEnterpriseData"
