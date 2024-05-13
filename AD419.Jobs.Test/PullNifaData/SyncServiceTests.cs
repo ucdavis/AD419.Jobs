@@ -74,9 +74,9 @@ public class SyncServiceTests
         // Arrange
         _mockSshService
             .Setup(ss => ss.ListFiles(It.IsAny<string>()))
-            .Returns([$"{extractName}_Incremental_00000000_000000.csv"]);
+            .Returns(new string[] { $"{extractName}_Incremental_00000000_000000.csv" });
         var syncService = new SyncService(_mockSqlDataContext.Object, _mockSyncOptions.Object, _mockSshService.Object);
-        
+
         // Act
         await syncService.Run();
 
