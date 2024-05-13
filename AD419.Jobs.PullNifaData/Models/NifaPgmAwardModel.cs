@@ -1,8 +1,10 @@
 using CsvHelper.Configuration.Attributes;
 using AD419.Jobs.PullNifaData.Attributes;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace AD419.Jobs.PullNifaData.Models;
 
+[Table("UCD_NIFA_PGM_AWARD")]
 public class NifaPgmAwardModel
 {
     [Name("Run Date")]
@@ -11,6 +13,7 @@ public class NifaPgmAwardModel
 
     [Name("Award ID")]
     [ColumnOrder]
+    [KeyOrder(0)]
     public string AwardID { get; set; } = "";
 
     [Name("Award Number")]
@@ -27,6 +30,7 @@ public class NifaPgmAwardModel
 
     [Name("Award Start Date")]
     [ColumnOrder]
+    [KeyOrder(1)]
     public DateTime? AwardStartDate { get; set; }
 
     [Name("Award End Date")]

@@ -1,8 +1,10 @@
+using System.ComponentModel.DataAnnotations.Schema;
 using AD419.Jobs.PullNifaData.Attributes;
 using CsvHelper.Configuration.Attributes;
 
 namespace AD419.Jobs.PullNifaData.Models;
 
+[Table("UCD_NIFA_PGM_PROJECT")]
 public class NifaPgmProjectModel
 {
     [Name("Run Date")]
@@ -11,6 +13,7 @@ public class NifaPgmProjectModel
 
     [Name("Project ID")]
     [ColumnOrder]
+    [KeyOrder(0)]
     public string ProjectID { get; set; } = "";
 
     [Name("Award ID")]

@@ -14,7 +14,7 @@ public static class PropertyInfoExtensions
     {
         var attribute = propertyInfo.GetCustomAttribute<MaxLengthAttribute>();
         if (attribute == null)
-            throw new InvalidOperationException($"Property {propertyInfo.Name} does not have a MaxLengthAttribute");
+            return 50; // seems to be a common default
         return attribute.Length;
     }
 

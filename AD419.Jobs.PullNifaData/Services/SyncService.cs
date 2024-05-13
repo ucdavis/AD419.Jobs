@@ -12,18 +12,21 @@ using AD419.Jobs.PullNifaData.Models;
 using AD419.Jobs.PullNifaData.Extensions;
 using AD419.Jobs.PullNifaData.Utilities;
 using Razor.Templating.Core;
+using AD419.Jobs.Core.Configuration;
+using AD419.Jobs.Core.Services;
+using AD419.Jobs.Core.Extensions;
 
 namespace AD419.Jobs.PullNifaData.Services;
 
 public class SyncService
 {
-    private readonly ConnectionStrings _connectionStrings;
+    ISqlDataContext _sqlDataContext;
     private readonly SyncOptions _syncOptions;
     private readonly ISshService _sshService;
 
-    public SyncService(IOptions<ConnectionStrings> connectionStrings, IOptions<SyncOptions> syncOptions, ISshService sshService)
+    public SyncService(ISqlDataContext sqlDataContext, IOptions<SyncOptions> syncOptions, ISshService sshService)
     {
-        _connectionStrings = connectionStrings.Value;
+        _sqlDataContext = sqlDataContext;
         _syncOptions = syncOptions.Value;
         _sshService = sshService;
     }
@@ -31,8 +34,6 @@ public class SyncService
     public async Task Run()
     {
         Log.Information("Starting sync");
-        using var connection = new SqlConnection(_connectionStrings.DefaultConnection);
-        await connection.OpenAsync();
 
         var filePaths = _sshService.ListFiles("/")
             .Where(f => Regex.IsMatch(Path.GetFileName(f), $@"NIFA_(GL|PGM_(AWARD|EMPLOYEE|EXPENDITURE|PROJECT))_Incremental_[0-9]{{8}}_[0-9]{{6}}\.csv"))
@@ -41,7 +42,7 @@ public class SyncService
         foreach (var filePath in filePaths)
         {
             Log.Information("Processing file {FileName}", filePath);
-            using var transaction = (SqlTransaction)await connection.BeginTransactionAsync();
+            await _sqlDataContext.BeginTransaction();
             try
             {
                 var stream = _sshService.DownloadFile(filePath);
@@ -56,19 +57,19 @@ public class SyncService
                 switch (Path.GetFileName(filePath))
                 {
                     case string s when Regex.IsMatch(s, @"NIFA_GL_.*?\.csv"):
-                        await SyncData<NifaGlModel>(connection, transaction, csv);
+                        await SyncData<NifaGlModel>(csv);
                         break;
                     case string s when Regex.IsMatch(s, @"NIFA_PGM_AWARD_.*?\.csv"):
-                        await SyncData<NifaPgmAwardModel>(connection, transaction, csv);
+                        await SyncData<NifaPgmAwardModel>(csv);
                         break;
                     case string s when Regex.IsMatch(s, @"NIFA_PGM_EMPLOYEE_.*?\.csv"):
-                        await SyncData<NifaPgmEmployeeModel>(connection, transaction, csv);
+                        await SyncData<NifaPgmEmployeeModel>(csv);
                         break;
                     case string s when Regex.IsMatch(s, @"NIFA_PGM_EXPENDITURE_.*?\.csv"):
-                        await SyncData<NifaPgmExpenditureModel>(connection, transaction, csv);
+                        await SyncData<NifaPgmExpenditureModel>(csv);
                         break;
                     case string s when Regex.IsMatch(s, @"NIFA_PGM_PROJECT_.*?\.csv"):
-                        await SyncData<NifaPgmProjectModel>(connection, transaction, csv);
+                        await SyncData<NifaPgmProjectModel>(csv);
                         break;
                     default:
                         throw new Exception($"Unknown file type {Path.GetFileName(filePath)}");
@@ -76,14 +77,14 @@ public class SyncService
 
                 _sshService.MoveFile(filePath, $"{_syncOptions.ProcessedFileLocation}/{Path.GetFileName(filePath)}");
 
-                await transaction.CommitAsync();
+                await _sqlDataContext.CommitTransaction();
             }
             catch (Exception e)
             {
                 Log.Error(e, "Error syncing");
                 try
                 {
-                    await transaction.RollbackAsync();
+                    await _sqlDataContext.RollbackTransaction();
                 }
                 catch (Exception ex)
                 {
@@ -94,7 +95,7 @@ public class SyncService
         }
     }
 
-    private async Task SyncData<T>(SqlConnection connection, SqlTransaction transaction, CsvReader csv)
+    private async Task SyncData<T>(CsvReader csv)
         where T : class
     {
         var dataTable = TableHelper.CreateDataTable<T>();
@@ -108,16 +109,11 @@ public class SyncService
             dataTable.AddModelData(record);
         }
         Log.Information("Creating temp table {TableName}", tableModel.Name);
-        await SqlHelper.ExecuteScriptFromString(initTempTableScript, connection, transaction);
+        await _sqlDataContext.ExecuteScriptFromString(initTempTableScript);
         Log.Information("Writing {TableName} data to temp table", tableModel.Name);
-        var bulkCopy = new SqlBulkCopy(connection, SqlBulkCopyOptions.Default, transaction)
-        {
-            DestinationTableName = $"#{tableModel.Name}",
-            BatchSize = _syncOptions.BulkCopyBatchSize
-        };
-        await bulkCopy.WriteToServerAsync(dataTable);
+        await _sqlDataContext.BulkCopy(dataTable, $"#{tableModel.Name}", _syncOptions.BulkCopyBatchSize);
         Log.Information("Merging {TableName} data", tableModel.Name);
-        await SqlHelper.ExecuteScriptFromString(mergeTempDataScript, connection, transaction);
+        await _sqlDataContext.ExecuteScriptFromString(mergeTempDataScript);
     }
 
 

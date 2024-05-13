@@ -1,9 +1,11 @@
+using System.ComponentModel.DataAnnotations.Schema;
 using AD419.Jobs.PullNifaData.Attributes;
 using CsvHelper.Configuration.Attributes;
 
 namespace AD419.Jobs.PullNifaData.Models;
 
 
+[Table("UCD_NIFA_PGM_EMPLOYEE")]
 public class NifaPgmEmployeeModel
 {
     [Name("Run Date")]
@@ -12,14 +14,17 @@ public class NifaPgmEmployeeModel
 
     [Name("Award ID")]
     [ColumnOrder]
+    [KeyOrder(0)]
     public string AwardID { get; set; } = "";
 
     [Name("Project ID")]
     [ColumnOrder]
+    [KeyOrder(1)]
     public string ProjectID { get; set; } = "";
 
     [Name("Person ID")]
     [ColumnOrder]
+    [KeyOrder(2)]
     public string PersonID { get; set; } = "";
 
     [Name("Person Name")]

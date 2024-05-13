@@ -54,26 +54,10 @@ public static class SqlHelper
         }
     }
 
-    public static async Task ExecuteScriptFromFile(string fileName, SqlConnection connection, SqlTransaction? transaction = null)
-    {
-        Log.Information("Executing script named {FileName}", Path.GetFileName(fileName));
-        // TODO: use connection.CreateBatch() once it is implemented for SqlConnection
-        foreach (var script in GetBatchesFromFile(fileName))
-        {
-            await ExecuteBatch(connection, transaction, script);
-        }
-    }
-
-    public static async Task ExecuteScriptFromString(string script, SqlConnection connection, SqlTransaction? transaction = null)
-    {
-        foreach (var batch in GetBatchesFromString(script))
-        {
-            await ExecuteBatch(connection, transaction, batch);
-        }
-    }
 
 
-    private static async Task ExecuteBatch(SqlConnection connection, SqlTransaction? transaction, string script)
+
+    public static async Task ExecuteBatch(SqlConnection connection, SqlTransaction? transaction, string script)
     {
         Log.Information("Executing batch: {BatchContent}", script);
         using var command = connection.CreateCommand();

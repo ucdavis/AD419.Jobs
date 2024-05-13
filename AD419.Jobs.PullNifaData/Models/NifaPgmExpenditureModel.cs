@@ -1,8 +1,10 @@
+using System.ComponentModel.DataAnnotations.Schema;
 using AD419.Jobs.PullNifaData.Attributes;
 using CsvHelper.Configuration.Attributes;
 
 namespace AD419.Jobs.PullNifaData.Models;
 
+[Table("UCD_NIFA_PGM_EXPENDITURE")]
 public class NifaPgmExpenditureModel
 {
     [Name("Run Date")]
@@ -11,14 +13,17 @@ public class NifaPgmExpenditureModel
 
     [Name("Expenditure Project ID")]
     [ColumnOrder]
+    [KeyOrder(0)]
     public string ExpenditureProjectID { get; set; } = "";
 
     [Name("Expenditure Award ID")]
     [ColumnOrder]
+    [KeyOrder(1)]
     public string ExpenditureAwardID { get; set; } = "";
 
     [Name("Expenditure Item Date")]
     [ColumnOrder]
+    [KeyOrder(2)]
     public DateTime? ExpenditureItemDate { get; set; }
 
     [Name("Expenditure Type")]

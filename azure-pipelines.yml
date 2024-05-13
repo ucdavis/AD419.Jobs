@@ -4,17 +4,17 @@
 # https://docs.microsoft.com/azure/devops/pipelines/languages/dotnet-core
 
 trigger:
-- main
+  - main
 
 name: 1.0.$(Date:yyMM).$(build.buildId)
 
 pool:
-  vmImage: 'windows-latest'
+  vmImage: "windows-latest"
 
 variables:
-  solution: '**/*.sln'
-  buildPlatform: 'Any CPU'
-  buildConfiguration: 'Release'
+  solution: "**/*.sln"
+  buildPlatform: "Any CPU"
+  buildConfiguration: "Release"
 
 stages:
   - stage: Build
@@ -22,10 +22,10 @@ stages:
       - job:
         steps:
           - task: UseDotNet@2
-            displayName: "Use .NET Core 6.0.407 sdk"
+            displayName: "Use .NET Core 6 sdk"
             inputs:
               packageType: sdk
-              version: 6.0.407
+              version: 6.x
               installationPath: $(Agent.ToolsDirectory)/dotnet
 
           - task: DotNetCoreCLI@2
@@ -39,16 +39,28 @@ stages:
               projects: "./AD419.Jobs.PullAggieEnterpriseData/AD419.Jobs.PullAggieEnterpriseData.csproj"
               arguments: "--configuration $(BuildConfiguration) /property:Version=$(build.buildNumber)"
 
+          - task: DotNetCoreCLI@2
+            displayName: "Build AD419.Jobs.PullNifaData"
+            inputs:
+              command: "build"
+              projects: "./AD419.Jobs.PullNifaData/AD419.Jobs.PullNifaData.csproj"
+              arguments: "--configuration $(BuildConfiguration) /property:Version=$(build.buildNumber)"
+
+          - task: DotNetCoreCLI@2
+            displayName: "Run Server Tests"
+            inputs:
+              command: "test"
+
   - stage: Publish
     condition: eq(variables['Build.SourceBranch'], 'refs/heads/main')
     jobs:
       - job:
         steps:
           - task: UseDotNet@2
-            displayName: "Use .NET Core 6.0.407 sdk"
+            displayName: "Use .NET Core 6 sdk"
             inputs:
               packageType: sdk
-              version: 6.0.407
+              version: 6.x
               installationPath: $(Agent.ToolsDirectory)/dotnet
 
           - task: DotNetCoreCLI@2
@@ -58,6 +70,15 @@ stages:
               publishWebProjects: false
               zipAfterPublish: false
               projects: "./AD419.Jobs.PullAggieEnterpriseData/AD419.Jobs.PullAggieEnterpriseData.csproj"
+              arguments: "--configuration $(BuildConfiguration) --output $(build.artifactstagingdirectory)/app_data/jobs/triggered"
+
+          - task: DotNetCoreCLI@2
+            displayName: "Publish AD419.Jobs.PullNifaData"
+            inputs:
+              command: "publish"
+              publishWebProjects: false
+              zipAfterPublish: false
+              projects: "./AD419.Jobs.PullNifaData/AD419.Jobs.PullNifaData.csproj"
               arguments: "--configuration $(BuildConfiguration) --output $(build.artifactstagingdirectory)/app_data/jobs/triggered"
 
           - task: PublishBuildArtifacts@1
