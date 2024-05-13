@@ -22,10 +22,10 @@ stages:
       - job:
         steps:
           - task: UseDotNet@2
-            displayName: "Use .NET Core 6 sdk"
+            displayName: "Use .NET Core 6.0.421 sdk"
             inputs:
               packageType: sdk
-              version: 6.x
+              version: 6.0.421
               installationPath: $(Agent.ToolsDirectory)/dotnet
 
           - task: DotNetCoreCLI@2
@@ -57,10 +57,10 @@ stages:
       - job:
         steps:
           - task: UseDotNet@2
-            displayName: "Use .NET Core 6 sdk"
+            displayName: "Use .NET Core 6.0.421 sdk"
             inputs:
               packageType: sdk
-              version: 6.x
+              version: 6.0.421
               installationPath: $(Agent.ToolsDirectory)/dotnet
 
           - task: DotNetCoreCLI@2
