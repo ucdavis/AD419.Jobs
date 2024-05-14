@@ -48,7 +48,7 @@ public class SyncService
                 var stream = _sshService.DownloadFile(filePath);
                 stream.Position = 0;
                 using var reader = new StreamReader(stream);
-                using var csv = new CsvReader(reader, new CsvConfiguration(CultureInfo.InvariantCulture)
+                using var csv = new FullMapCsvReader(reader, new CsvConfiguration(CultureInfo.InvariantCulture)
                 {
                     HasHeaderRecord = true,
                     Delimiter = "|",
