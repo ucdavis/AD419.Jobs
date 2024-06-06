@@ -1,5 +1,6 @@
 using System.Data;
 using System.Reflection;
+using System.Text.RegularExpressions;
 using AD419.Jobs.Configuration;
 using AD419.Jobs.Core.Configuration;
 using AD419.Jobs.Core.Services;
@@ -20,9 +21,7 @@ public class SyncServiceTests
     private Mock<ISshService> _mockSshService;
     private Mock<ISqlDataContext> _mockSqlDataContext;
 
-
-    // The following are state that can be checked in test assertions
-    // Cleanup not necessary, because xUnit instantiates this class for each test
+    // Cleanup not necessary because xUnit instantiates this class for each test run
     private List<string> _sentQueries = new();
 
     public SyncServiceTests(ITestOutputHelper output)
@@ -60,21 +59,21 @@ public class SyncServiceTests
             .Setup(sdc => sdc.ExecuteNonQuery(It.IsAny<string>()))
             .Callback<string>(_sentQueries.Add);
         _mockSqlDataContext
-            .Setup(sdc => sdc.BulkCopy(It.IsAny<DataTable>(), It.IsAny<string>(), It.IsAny<int>()));
+            .Setup(sdc => sdc.BulkCopy(It.IsAny<DataTable>(), It.IsAny<string>(), It.IsAny<int>(), It.IsAny<int>()));
     }
 
 
     [Theory]
-    [InlineData("NIFA_PGM_AWARD")]
-    [InlineData("NIFA_PGM_EMPLOYEE")]
-    [InlineData("NIFA_PGM_EXPENDITURE")]
-    [InlineData("NIFA_PGM_PROJECT")]
+    [InlineData("NIFA_PGM_AWARD_Incremental_00000000_000000.csv")]
+    [InlineData("NIFA_PGM_EMPLOYEE_Incremental_00000000_000000.csv")]
+    [InlineData("NIFA_PGM_EXPENDITURE_Incremental_00000000_000000.csv")]
+    [InlineData("NIFA_PGM_PROJECT_Incremental_00000000_000000.csv")]
     public async Task PgmExtractsAreSuccessfullyProcessed(string extractName)
     {
         // Arrange
         _mockSshService
             .Setup(ss => ss.ListFiles(It.IsAny<string>()))
-            .Returns(new string[] { $"{extractName}_Incremental_00000000_000000.csv" });
+            .Returns(new string[] { extractName });
         var syncService = new SyncService(_mockSqlDataContext.Object, _mockSyncOptions.Object, _mockSshService.Object);
 
         // Act
@@ -82,7 +81,29 @@ public class SyncServiceTests
 
         // Assert
         // Each extract should generate three queries (ensure temp table, merge data, and truncate temp table)
-        _sentQueries.Count(q => q.Contains(extractName)).ShouldBe(3);
-        _mockSqlDataContext.Verify(sdc => sdc.BulkCopy(It.IsAny<DataTable>(), It.IsAny<string>(), It.IsAny<int>()));
+        _sentQueries.Count(q => Regex.IsMatch(q, "NIFA_(GL|PGM_(AWARD|EMPLOYEE|EXPENDITURE|PROJECT))")).ShouldBe(3);
+        // BulkCopy should only be called once
+        _mockSqlDataContext.Verify(sdc => sdc.BulkCopy(It.IsAny<DataTable>(), It.IsAny<string>(), It.IsAny<int>(), It.IsAny<int>()), Times.Once);
     }
+
+    [Theory]
+    [InlineData("NIFA_PGM_EMPLOYEE_Incremental_00000000_000001.csv")]
+    [InlineData("NIFA_PGM_EXPENDITURE_Incremental_00000000_000001.csv")]
+    public async Task PgmExtractsWithBadDataAreGracefullyHandled(string extractName)
+    {
+        // Arrange
+        _mockSshService
+            .Setup(ss => ss.ListFiles(It.IsAny<string>()))
+            .Returns(new string[] { extractName });
+        var syncService = new SyncService(_mockSqlDataContext.Object, _mockSyncOptions.Object, _mockSshService.Object);
+
+        // Act
+        await syncService.Run();
+
+        // Assert
+        // Each extract should generate three queries (ensure temp table, merge data, and truncate temp table)
+        _sentQueries.Count(q => Regex.IsMatch(q, "NIFA_(GL|PGM_(AWARD|EMPLOYEE|EXPENDITURE|PROJECT))")).ShouldBe(3);
+        // BulkCopy should be called once for good data and once for bad data
+        _mockSqlDataContext.Verify(sdc => sdc.BulkCopy(It.IsAny<DataTable>(), It.IsAny<string>(), It.IsAny<int>(), It.IsAny<int>()), Times.Exactly(2));
+    }    
 }

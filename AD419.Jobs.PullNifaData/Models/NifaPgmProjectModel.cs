@@ -8,55 +8,59 @@ namespace AD419.Jobs.PullNifaData.Models;
 public class NifaPgmProjectModel
 {
     [Name("Run Date")]
-    [ColumnOrder]
+    [DbColumnOrder]
     public DateTime RunDate { get; set; }
 
     [Name("Project ID")]
-    [ColumnOrder]
-    [KeyOrder(0)]
+    [DbColumnOrder]
+    [DbKeyOrder(0)]
     public string ProjectID { get; set; } = "";
 
     [Name("Award ID")]
-    [ColumnOrder]
+    [DbColumnOrder]
     public string AwardID { get; set; } = "";
 
     [Name("Project Legal Entity")]
-    [ColumnOrder]
+    [DbColumnOrder]
     public string ProjectLegalEntity { get; set; } = "";
 
     [Name("Project Owning Organization")]
-    [ColumnOrder]
+    [DbColumnOrder]
     public string ProjectOwningOrganization { get; set; } = "";
 
     [Name("Project Number")]
-    [ColumnOrder]
+    [DbColumnOrder]
     public string ProjectNumber { get; set; } = "";
 
     [Name("Project Name")]
-    [ColumnOrder]
+    [DbColumnOrder]
     public string ProjectName { get; set; } = "";
 
     [Name("Project Type")]
-    [ColumnOrder]
+    [DbColumnOrder]
     public string ProjectType { get; set; } = "";
 
     [Name("Project Start Date")]
-    [ColumnOrder]
+    [DbColumnOrder]
     public DateTime? ProjectStartDate { get; set; }
 
     [Name("Project End Date")]
-    [ColumnOrder]
+    [DbColumnOrder]
     public DateTime? ProjectEndDate { get; set; }
 
     [Name("Project Closed Date")]
-    [ColumnOrder]
+    [DbColumnOrder]
     public DateTime? ProjectClosedDate { get; set; }
 
     [Name("Project Creation Date")]
-    [ColumnOrder]
+    [DbColumnOrder]
     public DateTime? ProjectCreationDate { get; set; }
 
     [Name("Project Last Update Date")]
-    [ColumnOrder]
+    [DbColumnOrder]
     public DateTime? ProjectLastUpdateDate { get; set; }
+
+    [Name("Project Fund")]
+    [DbColumnOrder]
+    public string ProjectFund { get; set; } = "";
 }

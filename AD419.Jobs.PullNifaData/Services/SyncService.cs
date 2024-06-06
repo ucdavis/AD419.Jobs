@@ -34,6 +34,7 @@ public class SyncService
     public async Task Run()
     {
         Log.Information("Starting sync");
+        var processedDate = DateTime.UtcNow;
 
         var filePaths = _sshService.ListFiles("/")
             .Where(f => Regex.IsMatch(Path.GetFileName(f), $@"NIFA_(GL|PGM_(AWARD|EMPLOYEE|EXPENDITURE|PROJECT))_Incremental_[0-9]{{8}}_[0-9]{{6}}\.csv"))
@@ -45,31 +46,41 @@ public class SyncService
             await _sqlDataContext.BeginTransaction();
             try
             {
+                var badData = new List<BadDataModel>();
                 var stream = _sshService.DownloadFile(filePath);
                 stream.Position = 0;
                 using var reader = new StreamReader(stream);
                 using var csv = new FullMapCsvReader(reader, new CsvConfiguration(CultureInfo.InvariantCulture)
                 {
                     HasHeaderRecord = true,
-                    Delimiter = "|",
+                    Delimiter = "^",
+                    BadDataFound = (badDataFoundArgs) =>
+                    {
+                        badData.Add(BadDataModel.From(Path.GetFileName(filePath), processedDate, badDataFoundArgs));
+                    },
+                    ReadingExceptionOccurred = (readingExceptionOccurredArgs) =>
+                    {
+                        badData.Add(BadDataModel.From(Path.GetFileName(filePath), processedDate, readingExceptionOccurredArgs));
+                        return false;
+                    }
                 });
 
                 switch (Path.GetFileName(filePath))
                 {
                     case string s when Regex.IsMatch(s, @"NIFA_GL_.*?\.csv"):
-                        await SyncData<NifaGlModel>(csv);
+                        await SyncData<NifaGlModel>(csv, badData);
                         break;
                     case string s when Regex.IsMatch(s, @"NIFA_PGM_AWARD_.*?\.csv"):
-                        await SyncData<NifaPgmAwardModel>(csv);
+                        await SyncData<NifaPgmAwardModel>(csv, badData);
                         break;
                     case string s when Regex.IsMatch(s, @"NIFA_PGM_EMPLOYEE_.*?\.csv"):
-                        await SyncData<NifaPgmEmployeeModel>(csv);
+                        await SyncData<NifaPgmEmployeeModel>(csv, badData);
                         break;
                     case string s when Regex.IsMatch(s, @"NIFA_PGM_EXPENDITURE_.*?\.csv"):
-                        await SyncData<NifaPgmExpenditureModel>(csv);
+                        await SyncData<NifaPgmExpenditureModel>(csv, badData);
                         break;
                     case string s when Regex.IsMatch(s, @"NIFA_PGM_PROJECT_.*?\.csv"):
-                        await SyncData<NifaPgmProjectModel>(csv);
+                        await SyncData<NifaPgmProjectModel>(csv, badData);
                         break;
                     default:
                         throw new Exception($"Unknown file type {Path.GetFileName(filePath)}");
@@ -95,7 +106,7 @@ public class SyncService
         }
     }
 
-    private async Task SyncData<T>(CsvReader csv)
+    private async Task SyncData<T>(CsvReader csv, List<BadDataModel> badData)
         where T : class
     {
         var dataTable = TableHelper.CreateDataTable<T>();
@@ -114,6 +125,16 @@ public class SyncService
         await _sqlDataContext.BulkCopy(dataTable, $"#{tableModel.Name}", _syncOptions.BulkCopyBatchSize);
         Log.Information("Merging {TableName} data", tableModel.Name);
         await _sqlDataContext.ExecuteScriptFromString(mergeTempDataScript);
+        if (badData.Any())
+        {
+            var badDataTable = TableHelper.CreateDataTable<BadDataModel>();
+            foreach (var badDataModel in badData)
+            {
+                badDataTable.AddModelData(badDataModel);
+            }
+            Log.Information("Writing bad data to NIFA_Bad_CSV_Data");
+            await _sqlDataContext.BulkCopy(badDataTable, "NIFA_Bad_CSV_Data", _syncOptions.BulkCopyBatchSize, skipColumn: 0);
+        }
     }
 
 

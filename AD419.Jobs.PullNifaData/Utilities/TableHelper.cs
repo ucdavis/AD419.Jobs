@@ -27,7 +27,7 @@ public static class TableHelper
                 ColumnOrder = i
             };
 
-            var keyOrderAttribute = p.GetCustomAttribute<KeyOrderAttribute>();
+            var keyOrderAttribute = p.GetCustomAttribute<DbKeyOrderAttribute>();
             if (keyOrderAttribute != null)
             {
                 columnModel.KeyOrder = keyOrderAttribute.Order;

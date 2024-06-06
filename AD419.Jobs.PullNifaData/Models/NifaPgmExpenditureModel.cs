@@ -8,73 +8,74 @@ namespace AD419.Jobs.PullNifaData.Models;
 public class NifaPgmExpenditureModel
 {
     [Name("Run Date")]
-    [ColumnOrder]
+    [DbColumnOrder]
     public DateTime RunDate { get; set; }
 
     [Name("Expenditure Project ID")]
-    [ColumnOrder]
-    [KeyOrder(0)]
+    [DbColumnOrder]
+    [DbKeyOrder(0)]
     public string ExpenditureProjectID { get; set; } = "";
 
     [Name("Expenditure Award ID")]
-    [ColumnOrder]
-    [KeyOrder(1)]
+    [DbColumnOrder]
+    [DbKeyOrder(1)]
     public string ExpenditureAwardID { get; set; } = "";
 
     [Name("Expenditure Item Date")]
-    [ColumnOrder]
-    [KeyOrder(2)]
+    [DbColumnOrder]
+    [DbKeyOrder(2)]
     public DateTime? ExpenditureItemDate { get; set; }
 
     [Name("Expenditure Type")]
-    [ColumnOrder]
+    [DbColumnOrder]
     public string ExpenditureType { get; set; } = "";
 
     [Name("Expenditure Category")]
-    [ColumnOrder]
+    [DbColumnOrder]
     public string ExpenditureCategory { get; set; } = "";
 
     [Name("Burdened Cost Amount")]
-    [ColumnOrder]
+    [DbColumnOrder]
+    [TypeConverter(typeof(DecimalTypeConverter))]
     public decimal BurdenedCostAmount { get; set; }
 
     [Name("Task Number")]
-    [ColumnOrder]
+    [DbColumnOrder]
     public string TaskNumber { get; set; } = "";
 
     [Name("Task Name")]
-    [ColumnOrder]
+    [DbColumnOrder]
     public string TaskName { get; set; } = "";
 
     [Name("Budget Period - Start Date")]
-    [ColumnOrder]
+    [DbColumnOrder]
     public DateTime? BudgetPeriodStartDate { get; set; }
 
     [Name("Budget Period - End Date")]
-    [ColumnOrder]
+    [DbColumnOrder]
     public DateTime? BudgetPeriodEndDate { get; set; }
 
     [Name("Project Burden Structure base (ie, MTDC)")]
-    [ColumnOrder]
+    [DbColumnOrder]
     public string ProjectBurdenStructureBase { get; set; } = "";
 
     [Name("Project Burden Cost Rate")]
-    [ColumnOrder]
+    [DbColumnOrder]
     public decimal? ProjectBurdenCostRate { get; set; }
 
     [Name("Project Task Fund DFF")]
-    [ColumnOrder]
+    [DbColumnOrder]
     public string ProjectTaskFundDFF { get; set; } = "";
 
     [Name("Project Task Purpose DFF")]
-    [ColumnOrder]
+    [DbColumnOrder]
     public string ProjectTaskPurposeDFF { get; set; } = "";
 
     [Name("Project Task Program DFF")]
-    [ColumnOrder]
+    [DbColumnOrder]
     public string ProjectTaskProgramDFF { get; set; } = "";
 
     [Name("Project Task Activity DFF")]
-    [ColumnOrder]
+    [DbColumnOrder]
     public string ProjectTaskActivityDFF { get; set; } = "";
 }

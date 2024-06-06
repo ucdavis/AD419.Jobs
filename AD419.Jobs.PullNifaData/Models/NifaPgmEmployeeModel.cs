@@ -9,49 +9,53 @@ namespace AD419.Jobs.PullNifaData.Models;
 public class NifaPgmEmployeeModel
 {
     [Name("Run Date")]
-    [ColumnOrder]
+    [DbColumnOrder]
     public DateTime RunDate { get; set; }
 
     [Name("Award ID")]
-    [ColumnOrder]
-    [KeyOrder(0)]
+    [DbColumnOrder]
+    [DbKeyOrder(0)]
     public string AwardID { get; set; } = "";
 
     [Name("Project ID")]
-    [ColumnOrder]
-    [KeyOrder(1)]
+    [DbColumnOrder]
+    [DbKeyOrder(1)]
     public string ProjectID { get; set; } = "";
 
     [Name("Person ID")]
-    [ColumnOrder]
-    [KeyOrder(2)]
+    [DbColumnOrder]
+    [DbKeyOrder(2)]
     public string PersonID { get; set; } = "";
 
     [Name("Person Name")]
-    [ColumnOrder]
+    [DbColumnOrder]
     public string PersonName { get; set; } = "";
 
     [Name("Person Number")]
-    [ColumnOrder]
+    [DbColumnOrder]
     public string PersonNumber { get; set; } = "";
 
     [Name("Role")]
-    [ColumnOrder]
+    [DbColumnOrder]
     public string Role { get; set; } = "";
 
     [Name("Role Start Date")]
-    [ColumnOrder]
+    [DbColumnOrder]
     public DateTime? RoleStartDate { get; set; }
 
     [Name("Role End Date")]
-    [ColumnOrder]
+    [DbColumnOrder]
     public DateTime? RoleEndDate { get; set; }
 
     [Name("Person Start Date")]
-    [ColumnOrder]
+    [DbColumnOrder]
     public DateTime? PersonStartDate { get; set; }
 
     [Name("Person End Date")]
-    [ColumnOrder]
+    [DbColumnOrder]
     public DateTime? PersonEndDate { get; set; }
+
+    [Name("Source")]
+    [DbColumnOrder]
+    public string Source { get; set; } = "";
 }

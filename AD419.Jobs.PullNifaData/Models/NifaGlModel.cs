@@ -9,115 +9,115 @@ namespace AD419.Jobs.PullNifaData.Models;
 public class NifaGlModel
 {
     [Name("ACCOUNTING YEAR")]
-    [ColumnOrder]
+    [DbColumnOrder]
     [Required]
     public int AccountingYear { get; set; }
     [Name("POSTED YEAR")]
-    [ColumnOrder]
+    [DbColumnOrder]
     public int? PostedYear { get; set; }
     [Name("PERIOD")]
-    [ColumnOrder]
+    [DbColumnOrder]
     [Required]
     public string Period { get; set; } = "";
     [Name("ACCOUNTING DATE")]
-    [ColumnOrder]
-    [KeyOrder(0)]
+    [DbColumnOrder]
+    [DbKeyOrder(0)]
     public DateTime? AccountingDate { get; set; }
     [Name("POSTED DATE")]
-    [ColumnOrder]
-    [KeyOrder(1)]
+    [DbColumnOrder]
+    [DbKeyOrder(1)]
     public DateTime? PostedDate { get; set; }
     [Name("JOURNAL CATEGORY")]
-    [ColumnOrder]
-    [KeyOrder(3)]
+    [DbColumnOrder]
+    [DbKeyOrder(3)]
     public string JournalCategory { get; set; } = "";
     [Name("JOURNAL SOURCE")]
-    [ColumnOrder]
-    [KeyOrder(2)]
+    [DbColumnOrder]
+    [DbKeyOrder(2)]
     public string JournalSource { get; set; } = "";
     [Name("ACCOUNT COMBINATION")]
-    [ColumnOrder]
-    [KeyOrder(4)]
+    [DbColumnOrder]
+    [DbKeyOrder(4)]
     [Required]
     public string AccountCombination { get; set; } = "";
     [Name("ENTITY")]
-    [ColumnOrder]
+    [DbColumnOrder]
     public string Entity { get; set; } = "";
     [Name("ENTITY DESCRIPTION")]
-    [ColumnOrder]
+    [DbColumnOrder]
     public string EntityDesctiption { get; set; } = "";
     [Name("FUND")]
-    [ColumnOrder]
+    [DbColumnOrder]
     public string Fund { get; set; } = "";
     [Name("FUND DESCRIPTION")]
-    [ColumnOrder]
+    [DbColumnOrder]
     public string FundDescription { get; set; } = "";
     [Name("PARENT FUND")]
-    [ColumnOrder]
+    [DbColumnOrder]
     public string ParentFund { get; set; } = "";
     [Name("PARENT FUND DESCRIPTION")]
-    [ColumnOrder]
+    [DbColumnOrder]
     public string ParentFundDescription { get; set; } = "";
     [Name("FINANCIAL DEPARTMENT PARENT C")]
-    [ColumnOrder]
+    [DbColumnOrder]
     public string FinancialDepartmentParentC { get; set; } = "";
     [Name("FINANCIAL DEPARTMENT PARENT C DESCRIPTION")]
-    [ColumnOrder]
+    [DbColumnOrder]
     public string FinancialDepartmentParentC_Description { get; set; } = "";
     [Name("FINANCIAL DEPARTMENT")]
-    [ColumnOrder]
+    [DbColumnOrder]
     public string FinancialDepartment { get; set; } = "";
     [Name("FINANCIAL DEPARTMENT DESCRIPTION")]
-    [ColumnOrder]
+    [DbColumnOrder]
     public string FinancialDepartmentDescription { get; set; } = "";
     [Name("NATURAL ACCOUNT")]
-    [ColumnOrder]
+    [DbColumnOrder]
     public string NaturalAccount { get; set; } = "";
     [Name("NATURAL ACCOUNT DESCRIPTION")]
-    [ColumnOrder]
+    [DbColumnOrder]
     public string NaturalAccountDescription { get; set; } = "";
     [Name("NATURAL ACCOUNT TYPE")]
-    [ColumnOrder]
+    [DbColumnOrder]
     public string NatruralAccountType { get; set; } = "";
     [Name("PURPOSE")]
-    [ColumnOrder]
+    [DbColumnOrder]
     public string Purpose { get; set; } = "";
     [Name("PURPOSE DESCRIPTION")]
-    [ColumnOrder]
+    [DbColumnOrder]
     public string PurposeDescription { get; set; } = "";
     [Name("PROGRAM")]
-    [ColumnOrder]
+    [DbColumnOrder]
     public string Program { get; set; } = "";
     [Name("PROGRAM DESCRIPTION")]
-    [ColumnOrder]
+    [DbColumnOrder]
     public string ProgramDescription { get; set; } = "";
     [Name("PROJECT")]
-    [ColumnOrder]
+    [DbColumnOrder]
     public string Project { get; set; } = "";
     [Name("PROJECT DESCRIPTION")]
-    [ColumnOrder]
+    [DbColumnOrder]
     public string ProjectDescription { get; set; } = "";
     [Name("ACTIVITY")]
-    [ColumnOrder]
+    [DbColumnOrder]
     public string Activity { get; set; } = "";
     [Name("ACTIVITY DESCRIPTION")]
-    [ColumnOrder]
+    [DbColumnOrder]
     public string ActivityDescription { get; set; } = "";
     [Name("INTER ENTITY")]
-    [ColumnOrder]
+    [DbColumnOrder]
     public string InterEntity { get; set; } = "";
     [Name("GL FUTURE 1")]
-    [ColumnOrder]
+    [DbColumnOrder]
     public string GL_Future1 { get; set; } = "";
     [Name("GL FUTURE 2")]
-    [ColumnOrder]
+    [DbColumnOrder]
     public string GL_Future2 { get; set; } = "";
     [Name("DEBIT AMOUNT")]
-    [ColumnOrder]
-    [KeyOrder(5)]
+    [DbColumnOrder]
+    [DbKeyOrder(5)]
     public decimal? DebitAmount { get; set; }
     [Name("CREDIT AMOUNT")]
-    [ColumnOrder]
-    [KeyOrder(6)]
+    [DbColumnOrder]
+    [DbKeyOrder(6)]
     public decimal? CreditAmount { get; set; }
 }

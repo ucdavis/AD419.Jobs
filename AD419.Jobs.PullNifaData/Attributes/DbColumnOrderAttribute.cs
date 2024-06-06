@@ -3,13 +3,13 @@ using System.Runtime.CompilerServices;
 namespace AD419.Jobs.PullNifaData.Attributes;
 
 /// <summary>
-/// Used to identify key columns and their position relative to other key columns
+/// Used to ensure properties are enumerated in declaration order when reflecting
 /// </summary>
 [AttributeUsage(AttributeTargets.Property, Inherited = false, AllowMultiple = false)]
-public sealed class KeyOrderAttribute : Attribute
+public sealed class DbColumnOrderAttribute : Attribute
 {
     private readonly int order_;
-    public KeyOrderAttribute([CallerLineNumber]int order = 0)
+    public DbColumnOrderAttribute([CallerLineNumber]int order = 0)
     {
         order_ = order;
     }

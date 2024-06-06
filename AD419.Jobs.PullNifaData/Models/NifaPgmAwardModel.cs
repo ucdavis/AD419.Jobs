@@ -1,6 +1,7 @@
 using CsvHelper.Configuration.Attributes;
 using AD419.Jobs.PullNifaData.Attributes;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.ComponentModel.DataAnnotations;
 
 namespace AD419.Jobs.PullNifaData.Models;
 
@@ -8,88 +9,118 @@ namespace AD419.Jobs.PullNifaData.Models;
 public class NifaPgmAwardModel
 {
     [Name("Run Date")]
-    [ColumnOrder]
+    [DbColumnOrder]
     public DateTime RunDate { get; set; }
 
     [Name("Award ID")]
-    [ColumnOrder]
-    [KeyOrder(0)]
+    [DbColumnOrder]
+    [DbKeyOrder(0)]
     public string AwardID { get; set; } = "";
 
     [Name("Award Number")]
-    [ColumnOrder]
+    [DbColumnOrder]
     public string AwardNumber { get; set; } = "";
 
     [Name("Award Type")]
-    [ColumnOrder]
+    [DbColumnOrder]
     public string AwardType { get; set; } = "";
 
     [Name("Award Purpose")]
-    [ColumnOrder]
+    [DbColumnOrder]
     public string AwardPurpose { get; set; } = "";
 
     [Name("Award Start Date")]
-    [ColumnOrder]
-    [KeyOrder(1)]
+    [DbColumnOrder]
+    [DbKeyOrder(1)]
     public DateTime? AwardStartDate { get; set; }
 
     [Name("Award End Date")]
-    [ColumnOrder]
+    [DbColumnOrder]
     public DateTime? AwardEndDate { get; set; }
 
     [Name("Award Funding Amount")]
-    [ColumnOrder]
-    public decimal AwardFundingAmount { get; set; }
+    [DbColumnOrder]
+    public decimal? AwardFundingAmount { get; set; }
 
     [Name("Sponsor / Customer Name")]
-    [ColumnOrder]
+    [DbColumnOrder]
     public string Sponsor_CustomerName { get; set; } = "";
 
     [Name("Sponsor / Customer Number")]
-    [ColumnOrder]
+    [DbColumnOrder]
     public string Sponsor_CustomerNumber { get; set; } = "";
 
     [Name("UCOP Sponsor Code")]
-    [ColumnOrder]
-    public int UCOPSponsorCode { get; set; }
+    [DbColumnOrder]
+    public string UCOPSponsorCode { get; set; } = "";
 
     [Name("Assistance Listing Numbers")]
-    [ColumnOrder]
+    [DbColumnOrder]
     public string AssistanceListingNumbers { get; set; } = "";
 
     [Name("Customer Class")]
-    [ColumnOrder]
+    [DbColumnOrder]
     public string CustomerClass { get; set; } = "";
 
     [Name("Terms & Conditions-Cost Share")]
-    [ColumnOrder]
+    [DbColumnOrder]
     public string Terms_Conditions_CostShare { get; set; } = "";
 
     [Name("Terms & Conditions-NSF Field of Study")]
-    [ColumnOrder]
+    [DbColumnOrder]
     public string Terms_Conditions_NSFFieldOfStudy { get; set; } = "";
 
     [Name("Invoice/LOC (Award Document Number)")]
-    [ColumnOrder]
+    [DbColumnOrder]
     public string Invoice_LOC_AwardDocumentNumber { get; set; } = "";
 
     [Name("LOC Number(Sponsor LOC Number)")]
-    [ColumnOrder]
+    [DbColumnOrder]
     public string LOCNumber_SponsorLOCNumber { get; set; } = "";
 
     [Name("Federal Prime Name")]
-    [ColumnOrder]
+    [DbColumnOrder]
     public string FederalPrimeName { get; set; } = "";
 
     [Name("Federal Prime Number")]
-    [ColumnOrder]
+    [DbColumnOrder]
     public string FederalPrimeNumber { get; set; } = "";
 
     [Name("NIFA Accession Number")]
-    [ColumnOrder]
+    [DbColumnOrder]
     public string NIFAAccessionNumber { get; set; } = "";
 
     [Name("NIFA Project Number")]
-    [ColumnOrder]
+    [DbColumnOrder]
     public string NIFAProjectNumber { get; set; } = "";
+
+    [Name("Award Name")]
+    [DbColumnOrder]
+    [MaxLength(300)]
+    public string AwardName { get; set; } = "";
+
+    [Name("Award Description")]
+    [DbColumnOrder]
+    public string AwardDescription { get; set; } = "";
+
+    [Name("Award Organization")]
+    [DbColumnOrder]
+    [MaxLength(300)]
+    public string AwardOrganization { get; set; } = "";
+
+    [Name("Award Status")]
+    [DbColumnOrder]
+    public string AwardStatus { get; set; } = "";
+
+    [Name("FlowThrough  Funds  Reference  Award  Name")]
+    [DbColumnOrder]
+    public string FlowThroughFundsReferenceAwardName { get; set; } = "";
+
+    [Name("FlowThrough  Funds  Amount")]
+    [DbColumnOrder]
+    public decimal? FlowThroughFundsAmount { get; set; }
+
+    [Name("FlowThrough  Funded  by  Federal  Agency")]
+    [DbColumnOrder]
+    public string FlowThroughFundedByFederalAgency { get; set; } = "";
 }
