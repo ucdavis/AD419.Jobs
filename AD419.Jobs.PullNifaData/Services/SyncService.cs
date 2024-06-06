@@ -20,7 +20,7 @@ namespace AD419.Jobs.PullNifaData.Services;
 
 public class SyncService
 {
-    ISqlDataContext _sqlDataContext;
+    private readonly ISqlDataContext _sqlDataContext;
     private readonly SyncOptions _syncOptions;
     private readonly ISshService _sshService;
 
@@ -86,6 +86,7 @@ public class SyncService
                         throw new Exception($"Unknown file type {Path.GetFileName(filePath)}");
                 }
 
+                Log.Information("Moving file {FileName} to {ProcessedFileLocation}", filePath, _syncOptions.ProcessedFileLocation);
                 _sshService.MoveFile(filePath, $"{_syncOptions.ProcessedFileLocation}/{Path.GetFileName(filePath)}");
 
                 await _sqlDataContext.CommitTransaction();
@@ -93,14 +94,29 @@ public class SyncService
             catch (Exception e)
             {
                 Log.Error(e, "Error syncing");
+                
+                // attempt to rollback transaction
                 try
                 {
+                    Log.Information("Rolling back transaction");
                     await _sqlDataContext.RollbackTransaction();
                 }
                 catch (Exception ex)
                 {
                     Log.Error(ex, "Error rolling back transaction");
                 }
+
+                // attempt to move problematic file so that future runs are not blocked
+                try
+                {
+                    Log.Information("Moving file {FileName} to {FailedFileLocation}", filePath, _syncOptions.FailedFileLocation);
+                    _sshService.MoveFile(filePath, $"{_syncOptions.FailedFileLocation}/{Path.GetFileName(filePath)}");
+                }
+                catch (Exception ex)
+                {
+                    Log.Error(ex, "Error moving file {FileName} to {FailedFileLocation}", filePath, _syncOptions.FailedFileLocation);
+                }
+
                 throw;
             }
         }

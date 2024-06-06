@@ -14,7 +14,7 @@ namespace AD419.Jobs.Services;
 public class SyncService
 {
     private readonly AggieEnterpriseService _aggieEnterpriseService;
-    ISqlDataContext _sqlDataContext;
+    private readonly ISqlDataContext _sqlDataContext;
     private readonly SyncOptions _syncOptions;
     private readonly DataTable _dataTable;
 
