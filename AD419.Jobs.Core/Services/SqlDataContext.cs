@@ -56,7 +56,7 @@ public sealed class SqlDataContext : IDisposable, ISqlDataContext
 
     public async Task ExecuteNonQuery(string script)
     {
-        using var connection = await GetOpenConnection();
+        var connection = await GetOpenConnection();
         Log.Information("Executing batch: {BatchContent}", script);
         using var command = connection.CreateCommand();
         command.CommandText = script;
