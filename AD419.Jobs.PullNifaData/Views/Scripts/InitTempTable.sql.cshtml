@@ -15,4 +15,11 @@ IF OBJECT_ID (N'dbo.#@Model.Name', N'U') IS NULL BEGIN
         .Select(c => $"[{c.Name}]")))
   );
 
+  @if(@Model.IsSnapshotData)
+  {
+    <text>
+      CREATE NONCLUSTERED INDEX IX_@(Model.Name)_RunDate ON #@Model.Name ([RunDate]);
+    </text>
+  }
+
 END

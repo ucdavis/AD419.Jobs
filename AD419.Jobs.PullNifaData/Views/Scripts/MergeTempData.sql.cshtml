@@ -1,38 +1,74 @@
 @model AD419.Jobs.PullNifaData.Models.TableModel;
 
-MERGE INTO @{@Model.Name}_New AS target
-USING #@Model.Name AS source ON (
-  @Html.Raw(string.Join($"{Environment.NewLine}  AND ", Model.Columns
-      .Where(c => c.KeyOrder.HasValue)
-      .OrderBy(c => c.KeyOrder)
-      .Select(c => c.Nullable
-        // explicitly consider columns equal if they both contain NULL
-        ? $"(target.[{c.Name}] = source.[{c.Name}] OR (target.[{c.Name}] IS NULL AND source.[{c.Name}] IS NULL))" 
-        : $"target.[{c.Name}] = source.[{c.Name}]")))
-) 
-WHEN MATCHED THEN UPDATE SET
-  @Html.Raw(string.Join($",{Environment.NewLine}  ", Model.Columns
-      .Where(c => !c.KeyOrder.HasValue)
-      .OrderBy(c => c.ColumnOrder)
-      .Select(c => $"target.[{c.Name}] = source.[{c.Name}]"))),
-  target.LastUpdated = GETDATE(),
-  target.IsActive = 1
-WHEN NOT MATCHED BY target THEN INSERT (
-  @Html.Raw(string.Join($",{Environment.NewLine}  ", Model.Columns
-      .OrderBy(c => c.ColumnOrder)
-      .Select(c => $"[{c.Name}]"))),
-  [LastUpdated],
-  [IsActive]
-) VALUES (
-  @Html.Raw(string.Join($",{Environment.NewLine}  ", Model.Columns
-      .OrderBy(c => c.ColumnOrder)
-      .Select(c => $"source.[{c.Name}]"))),
-  GETDATE(),
-  1
-)
-WHEN NOT MATCHED BY source THEN UPDATE SET
-  target.IsActive = 0
-;
+DECLARE @@IsOldSnapshotData BIT;
+SET @@IsOldSnapshotData = @if(Model.IsSnapshotData)
+{
+  <text>(SELECT IIF(
+    (SELECT MAX([RunDate]) FROM @{@Model.Name}_New) >= 
+    (SELECT MAX([RunDate]) FROM #@Model.Name), 1, 0));</text>
+}
+else
+{
+  <text>0;</text>
+}
+
+IF @@IsOldSnapshotData = 1
+  MERGE INTO @{@Model.Name}_New AS target
+  USING #@Model.Name AS source ON (
+    @Html.Raw(string.Join($"{Environment.NewLine}    AND ", Model.Columns
+        .Where(c => c.KeyOrder.HasValue)
+        .OrderBy(c => c.KeyOrder)
+        .Select(c => c.Nullable
+          // explicitly consider columns equal if they both contain NULL
+          ? $"(target.[{c.Name}] = source.[{c.Name}] OR (target.[{c.Name}] IS NULL AND source.[{c.Name}] IS NULL))" 
+          : $"target.[{c.Name}] = source.[{c.Name}]")))
+  ) 
+  WHEN NOT MATCHED BY target THEN INSERT (
+    @Html.Raw(string.Join($",{Environment.NewLine}    ", Model.Columns
+        .OrderBy(c => c.ColumnOrder)
+        .Select(c => $"[{c.Name}]"))),
+    [LastUpdated],
+    [IsActive]
+  ) VALUES (
+    @Html.Raw(string.Join($",{Environment.NewLine}    ", Model.Columns
+        .OrderBy(c => c.ColumnOrder)
+        .Select(c => $"source.[{c.Name}]"))),
+    GETDATE(),
+    1
+  );
+ELSE
+  MERGE INTO @{@Model.Name}_New AS target
+  USING #@Model.Name AS source ON (
+    @Html.Raw(string.Join($"{Environment.NewLine}    AND ", Model.Columns
+        .Where(c => c.KeyOrder.HasValue)
+        .OrderBy(c => c.KeyOrder)
+        .Select(c => c.Nullable
+          // explicitly consider columns equal if they both contain NULL
+          ? $"(target.[{c.Name}] = source.[{c.Name}] OR (target.[{c.Name}] IS NULL AND source.[{c.Name}] IS NULL))" 
+          : $"target.[{c.Name}] = source.[{c.Name}]")))
+  ) 
+  WHEN MATCHED THEN UPDATE SET
+    @Html.Raw(string.Join($",{Environment.NewLine}    ", Model.Columns
+        .Where(c => !c.KeyOrder.HasValue)
+        .OrderBy(c => c.ColumnOrder)
+        .Select(c => $"target.[{c.Name}] = source.[{c.Name}]"))),
+    target.LastUpdated = GETDATE(),
+    target.IsActive = 1
+  WHEN NOT MATCHED BY target THEN INSERT (
+    @Html.Raw(string.Join($",{Environment.NewLine}    ", Model.Columns
+        .OrderBy(c => c.ColumnOrder)
+        .Select(c => $"[{c.Name}]"))),
+    [LastUpdated],
+    [IsActive]
+  ) VALUES (
+    @Html.Raw(string.Join($",{Environment.NewLine}    ", Model.Columns
+        .OrderBy(c => c.ColumnOrder)
+        .Select(c => $"source.[{c.Name}]"))),
+    GETDATE(),
+    1
+  )
+  WHEN NOT MATCHED BY source THEN UPDATE SET
+    target.IsActive = 0;
 
 go
 

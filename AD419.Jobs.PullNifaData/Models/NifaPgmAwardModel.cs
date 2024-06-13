@@ -6,7 +6,7 @@ using System.ComponentModel.DataAnnotations;
 namespace AD419.Jobs.PullNifaData.Models;
 
 [Table("UCD_NIFA_PGM_AWARD")]
-public class NifaPgmAwardModel
+public class NifaPgmAwardModel : ISnapshotDataModel
 {
     [Name("Run Date")]
     [DbColumnOrder]
@@ -23,6 +23,7 @@ public class NifaPgmAwardModel
 
     [Name("Award Type")]
     [DbColumnOrder]
+    [MaxLength(300)]
     public string AwardType { get; set; } = "";
 
     [Name("Award Purpose")]
@@ -44,6 +45,7 @@ public class NifaPgmAwardModel
 
     [Name("Sponsor / Customer Name")]
     [DbColumnOrder]
+    [MaxLength(300)]
     public string Sponsor_CustomerName { get; set; } = "";
 
     [Name("Sponsor / Customer Number")]
@@ -68,6 +70,7 @@ public class NifaPgmAwardModel
 
     [Name("Terms & Conditions-NSF Field of Study")]
     [DbColumnOrder]
+    [MaxLength(300)]
     public string Terms_Conditions_NSFFieldOfStudy { get; set; } = "";
 
     [Name("Invoice/LOC (Award Document Number)")]
@@ -80,6 +83,7 @@ public class NifaPgmAwardModel
 
     [Name("Federal Prime Name")]
     [DbColumnOrder]
+    [MaxLength(300)]
     public string FederalPrimeName { get; set; } = "";
 
     [Name("Federal Prime Number")]
@@ -101,6 +105,7 @@ public class NifaPgmAwardModel
 
     [Name("Award Description")]
     [DbColumnOrder]
+    [MaxLength(300)]
     public string AwardDescription { get; set; } = "";
 
     [Name("Award Organization")]
@@ -114,6 +119,7 @@ public class NifaPgmAwardModel
 
     [Name("FlowThrough  Funds  Reference  Award  Name")]
     [DbColumnOrder]
+    [MaxLength(300)]
     public string FlowThroughFundsReferenceAwardName { get; set; } = "";
 
     [Name("FlowThrough  Funds  Amount")]

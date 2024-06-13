@@ -6,7 +6,7 @@ namespace AD419.Jobs.PullNifaData.Models;
 
 
 [Table("UCD_NIFA_PGM_EMPLOYEE")]
-public class NifaPgmEmployeeModel
+public class NifaPgmEmployeeModel : ISnapshotDataModel
 {
     [Name("Run Date")]
     [DbColumnOrder]

@@ -40,6 +40,12 @@ public class SyncService
             .Where(f => Regex.IsMatch(Path.GetFileName(f), $@"NIFA_(GL|PGM_(AWARD|EMPLOYEE|EXPENDITURE|PROJECT))_Incremental_[0-9]{{8}}_[0-9]{{6}}\.csv"))
             .OrderBy(x => x);
 
+        if (!filePaths.Any())
+        {
+            Log.Information("No files to process");
+            return;
+        }
+
         foreach (var filePath in filePaths)
         {
             Log.Information("Processing file {FileName}", filePath);
@@ -148,8 +154,8 @@ public class SyncService
             {
                 badDataTable.AddModelData(badDataModel);
             }
-            Log.Information("Writing bad data to NIFA_Bad_CSV_Data");
-            await _sqlDataContext.BulkCopy(badDataTable, "NIFA_Bad_CSV_Data", _syncOptions.BulkCopyBatchSize, skipColumn: 0);
+            Log.Information("Writing bad data to UCD_NIFA_Bad_CSV_Data");
+            await _sqlDataContext.BulkCopy(badDataTable, "UCD_NIFA_Bad_CSV_Data", _syncOptions.BulkCopyBatchSize, skipColumn: 0);
         }
     }
 

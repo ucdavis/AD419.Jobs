@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using AD419.Jobs.PullNifaData.Attributes;
 using CsvHelper.Configuration.Attributes;
@@ -5,7 +6,7 @@ using CsvHelper.Configuration.Attributes;
 namespace AD419.Jobs.PullNifaData.Models;
 
 [Table("UCD_NIFA_PGM_EXPENDITURE")]
-public class NifaPgmExpenditureModel
+public class NifaPgmExpenditureModel : ISnapshotDataModel
 {
     [Name("Run Date")]
     [DbColumnOrder]
@@ -28,10 +29,12 @@ public class NifaPgmExpenditureModel
 
     [Name("Expenditure Type")]
     [DbColumnOrder]
+    [MaxLength(300)]
     public string ExpenditureType { get; set; } = "";
 
     [Name("Expenditure Category")]
     [DbColumnOrder]
+    [MaxLength(300)]
     public string ExpenditureCategory { get; set; } = "";
 
     [Name("Burdened Cost Amount")]
@@ -45,6 +48,7 @@ public class NifaPgmExpenditureModel
 
     [Name("Task Name")]
     [DbColumnOrder]
+    [MaxLength(300)]
     public string TaskName { get; set; } = "";
 
     [Name("Budget Period - Start Date")]
