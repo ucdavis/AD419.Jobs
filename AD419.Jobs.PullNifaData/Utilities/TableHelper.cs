@@ -14,8 +14,7 @@ public static class TableHelper
     {
         var tableModel = new TableModel
         {
-            Name = typeof(T).GetCustomAttribute<TableAttribute>()?.Name ?? throw new Exception($"Missing TableAttribute on {typeof(T).Name}"),
-            IsSnapshotData = typeof(T).GetInterfaces().Contains(typeof(ISnapshotDataModel))
+            Name = typeof(T).GetCustomAttribute<TableAttribute>()?.Name ?? throw new Exception($"Missing TableAttribute on {typeof(T).Name}")
         };
 
         var columns = typeof(T).GetOrderedProperties().Select((p, i) =>

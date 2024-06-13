@@ -6,7 +6,7 @@ using CsvHelper.Configuration.Attributes;
 namespace AD419.Jobs.PullNifaData.Models;
 
 [Table("UCD_NIFA_PGM_EXPENDITURE")]
-public class NifaPgmExpenditureModel : ISnapshotDataModel
+public class NifaPgmExpenditureModel
 {
     [Name("Run Date")]
     [DbColumnOrder]

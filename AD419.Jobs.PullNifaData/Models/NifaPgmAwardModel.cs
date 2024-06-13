@@ -6,7 +6,7 @@ using System.ComponentModel.DataAnnotations;
 namespace AD419.Jobs.PullNifaData.Models;
 
 [Table("UCD_NIFA_PGM_AWARD")]
-public class NifaPgmAwardModel : ISnapshotDataModel
+public class NifaPgmAwardModel
 {
     [Name("Run Date")]
     [DbColumnOrder]

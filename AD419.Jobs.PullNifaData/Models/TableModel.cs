@@ -4,7 +4,6 @@ public class TableModel
 {
     public string Name { get; set; } = "";
     public List<ColumnModel> Columns { get; set; } = new();
-    public bool IsSnapshotData { get; set; }
 }
 
 public class ColumnModel

@@ -1,16 +1,10 @@
 @model AD419.Jobs.PullNifaData.Models.TableModel;
 
 DECLARE @@IsOldSnapshotData BIT;
-SET @@IsOldSnapshotData = @if(Model.IsSnapshotData)
-{
-  <text>(SELECT IIF(
-    (SELECT MAX([RunDate]) FROM @{@Model.Name}_New) >= 
-    (SELECT MAX([RunDate]) FROM #@Model.Name), 1, 0));</text>
-}
-else
-{
-  <text>0;</text>
-}
+SET @@IsOldSnapshotData = (SELECT IIF(
+  (SELECT MAX([RunDate]) FROM @{@Model.Name}_New) >= (SELECT MAX([RunDate]) FROM #@Model.Name),
+  1,
+  0));
 
 IF @@IsOldSnapshotData = 1
   MERGE INTO @{@Model.Name}_New AS target
