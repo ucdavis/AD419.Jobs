@@ -18,6 +18,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AD419.Jobs.Core", "AD419.Jo
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AD419.Jobs.PullNifaData", "AD419.Jobs.PullNifaData\AD419.Jobs.PullNifaData.csproj", "{E4929158-C83C-4521-A6A8-AC6A2CD6FAD6}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AD419.Jobs.Test", "AD419.Jobs.Test\AD419.Jobs.Test.csproj", "{5E61251B-4166-4416-B181-8BF3E2A7E74E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +41,10 @@ Global
 		{E4929158-C83C-4521-A6A8-AC6A2CD6FAD6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E4929158-C83C-4521-A6A8-AC6A2CD6FAD6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E4929158-C83C-4521-A6A8-AC6A2CD6FAD6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5E61251B-4166-4416-B181-8BF3E2A7E74E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5E61251B-4166-4416-B181-8BF3E2A7E74E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5E61251B-4166-4416-B181-8BF3E2A7E74E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5E61251B-4166-4416-B181-8BF3E2A7E74E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{C159B50B-9715-4942-BDBF-D2A35A0AA4C6} = {D142B944-6E29-4C5A-BC7F-9610EEECF3CF}

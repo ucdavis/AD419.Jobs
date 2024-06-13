@@ -12,7 +12,7 @@ public interface ISshService
     IEnumerable<string> ListFiles(string directory);
     void PlaceFile(string contents, string path);
     void MoveFile(string origPath, string newPath);
-    MemoryStream DownloadFile(string fileName);
+    Stream DownloadFile(string fileName);
 }
 
 public class SshService : ISshService
@@ -60,7 +60,7 @@ public class SshService : ISshService
         return client;
     }
 
-    public MemoryStream DownloadFile(string fileName)
+    public Stream DownloadFile(string fileName)
     {
         using var client = GetSftpClient();
         var stream = new MemoryStream();

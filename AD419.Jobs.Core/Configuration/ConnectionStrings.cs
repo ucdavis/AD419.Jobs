@@ -1,4 +1,4 @@
-namespace AD419.Jobs.Configuration;
+namespace AD419.Jobs.Core.Configuration;
 
 public class ConnectionStrings
 {

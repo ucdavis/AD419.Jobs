@@ -1,5 +1,7 @@
 ﻿using AD419.Jobs.Configuration;
 using AD419.Jobs.Core;
+using AD419.Jobs.Core.Configuration;
+using AD419.Jobs.Core.Services;
 using AD419.Jobs.PullNifaData.Services;
 using Microsoft.Extensions.DependencyInjection;
 using Serilog;
@@ -33,6 +35,7 @@ class Program : JobBase
 
         services.AddSingleton<SyncService>();
         services.AddSingleton<ISshService, SshService>();
+        services.AddSingleton<ISqlDataContext, SqlDataContext>();
 
         return services.BuildServiceProvider();
     }
