@@ -12,7 +12,7 @@ IF OBJECT_ID (N'dbo.#@Model.Name', N'U') IS NULL BEGIN
     @Html.Raw(string.Join($",{Environment.NewLine}    ", Model.Columns
         .Where(c => c.KeyOrder.HasValue)
         .OrderBy(c => c.KeyOrder)
-        .Select(c => $"[{c.Name}]")))
+        .Select(c => $"[{c.Name}] {Enum.GetName(c.KeySort.GetType(), c.KeySort)}")))
   );
 
   CREATE NONCLUSTERED INDEX IX_@(Model.Name)_RunDate ON #@Model.Name ([RunDate]);

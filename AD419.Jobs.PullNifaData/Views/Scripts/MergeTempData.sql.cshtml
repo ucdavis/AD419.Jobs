@@ -7,8 +7,26 @@ SET @@IsOldSnapshotData = (SELECT IIF(
   0));
 
 IF @@IsOldSnapshotData = 1
+  @* -- Use a CTE to isolate ugliness of optional grouping of data from rest of merge statement *@
+  WITH source as (
+    SELECT
+      @Html.Raw(string.Join($",{Environment.NewLine}      ", Model.Columns
+        .OrderBy(c => c.ColumnOrder)
+        .Select(c => c.Aggregate.HasValue ? $"{Enum.GetName(c.Aggregate.Value.GetType(), c.Aggregate.Value)}([{c.Name}]) [{c.Name}]" : $"[{c.Name}]")))
+    FROM #@Model.Name
+    @if (@Model.Columns.Any(c => c.Aggregate.HasValue))
+    {
+      <text>
+        GROUP BY
+          @Html.Raw(string.Join($",{Environment.NewLine}          ", Model.Columns
+            .Where(c => !c.Aggregate.HasValue)
+            .OrderBy(c => c.ColumnOrder)
+            .Select(c => $"[{c.Name}]")))
+      </text>
+    }
+  )
   MERGE INTO @{@Model.Name}_New AS target
-  USING #@Model.Name AS source ON (
+  USING source ON (
     @Html.Raw(string.Join($"{Environment.NewLine}    AND ", Model.Columns
         .Where(c => c.KeyOrder.HasValue)
         .OrderBy(c => c.KeyOrder)
@@ -31,8 +49,26 @@ IF @@IsOldSnapshotData = 1
     1
   );
 ELSE
+  @* -- Use a CTE to isolate ugliness of optional grouping of data from rest of merge statement *@
+  WITH source as (
+    SELECT
+      @Html.Raw(string.Join($",{Environment.NewLine}      ", Model.Columns
+        .OrderBy(c => c.ColumnOrder)
+        .Select(c => c.Aggregate.HasValue ? $"{Enum.GetName(c.Aggregate.Value.GetType(), c.Aggregate.Value)}([{c.Name}]) [{c.Name}]" : $"[{c.Name}]")))
+    FROM #@Model.Name
+    @if (@Model.Columns.Any(c => c.Aggregate.HasValue))
+    {
+      <text>
+        GROUP BY
+          @Html.Raw(string.Join($",{Environment.NewLine}          ", Model.Columns
+            .Where(c => !c.Aggregate.HasValue)
+            .OrderBy(c => c.ColumnOrder)
+            .Select(c => $"[{c.Name}]")))
+      </text>
+    }
+  )
   MERGE INTO @{@Model.Name}_New AS target
-  USING #@Model.Name AS source ON (
+  USING source ON (
     @Html.Raw(string.Join($"{Environment.NewLine}    AND ", Model.Columns
         .Where(c => c.KeyOrder.HasValue)
         .OrderBy(c => c.KeyOrder)

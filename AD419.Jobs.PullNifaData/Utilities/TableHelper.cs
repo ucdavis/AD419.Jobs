@@ -31,7 +31,16 @@ public static class TableHelper
             if (keyOrderAttribute != null)
             {
                 columnModel.KeyOrder = keyOrderAttribute.Order;
+                columnModel.KeySort = keyOrderAttribute.Sort;
             }
+
+            var aggregateAttribute = p.GetCustomAttribute<DbAggregateAttribute>();
+            if (aggregateAttribute != null)
+            {
+                columnModel.Aggregate = aggregateAttribute.AggregateFn;
+            }
+
+            
 
             return columnModel;
         }).ToList();

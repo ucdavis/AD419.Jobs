@@ -125,5 +125,6 @@ public class NifaGlModel
     public DateTime RunDate { get; set; }
     [Name("EXPENSE TYPE")]
     [DbColumnOrder]
+    [DbKeyOrder(7)]
     public string ExpenseType { get; set; } = "";
 }
