@@ -68,6 +68,7 @@ public class SyncServiceTests
     [InlineData("NIFA_PGM_EMPLOYEE_Incremental_00000000_000000.csv")]
     [InlineData("NIFA_PGM_EXPENDITURE_Incremental_00000000_000000.csv")]
     [InlineData("NIFA_PGM_PROJECT_Incremental_00000000_000000.csv")]
+    [InlineData("NIFA_GL_Incremental_00000000_000000.csv")]
     public async Task PgmExtractsAreSuccessfullyProcessed(string extractName)
     {
         // Arrange

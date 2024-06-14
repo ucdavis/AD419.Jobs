@@ -120,4 +120,10 @@ public class NifaGlModel
     [DbColumnOrder]
     [DbKeyOrder(6)]
     public decimal? CreditAmount { get; set; }
+    [Name("RUN DATE")]
+    [DbColumnOrder]
+    public DateTime RunDate { get; set; }
+    [Name("EXPENSE TYPE")]
+    [DbColumnOrder]
+    public string ExpenseType { get; set; } = "";
 }
