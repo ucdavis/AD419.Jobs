@@ -24,26 +24,30 @@ public class NifaPgmExpenditureModel
 
     [Name("Expenditure Item Date")]
     [DbColumnOrder]
-    [DbKeyOrder(2)]
+    [DbKeyOrder(6)]
     public DateTime? ExpenditureItemDate { get; set; }
 
     [Name("Expenditure Type")]
     [DbColumnOrder]
     [MaxLength(300)]
+    [DbKeyOrder(2)]
     public string ExpenditureType { get; set; } = "";
 
     [Name("Expenditure Category")]
     [DbColumnOrder]
     [MaxLength(300)]
+    [DbKeyOrder(3)]
     public string ExpenditureCategory { get; set; } = "";
 
     [Name("Burdened Cost Amount")]
     [DbColumnOrder]
     [TypeConverter(typeof(DecimalTypeConverter))]
+    [DbKeyOrder(4)]
     public decimal BurdenedCostAmount { get; set; }
 
     [Name("Task Number")]
     [DbColumnOrder]
+    [DbKeyOrder(5)]
     public string TaskNumber { get; set; } = "";
 
     [Name("Task Name")]
@@ -61,10 +65,12 @@ public class NifaPgmExpenditureModel
 
     [Name("Project Burden Structure base (ie, MTDC)")]
     [DbColumnOrder]
+    [DbKeyOrder(7)]
     public string ProjectBurdenStructureBase { get; set; } = "";
 
     [Name("Project Burden Cost Rate")]
     [DbColumnOrder]
+    [DbKeyOrder(8)]
     public decimal? ProjectBurdenCostRate { get; set; }
 
     [Name("Project Task Fund DFF")]
