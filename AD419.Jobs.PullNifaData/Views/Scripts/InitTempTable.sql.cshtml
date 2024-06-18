@@ -8,13 +8,4 @@ IF OBJECT_ID (N'dbo.#@Model.Name', N'U') IS NULL BEGIN
       .Select(c => $"[{c.Name}] {c.SqlType}")))
   );
 
-  CREATE UNIQUE CLUSTERED INDEX PK_Temp@{@Model.Name} ON #@Model.Name (
-    @Html.Raw(string.Join($",{Environment.NewLine}    ", Model.Columns
-        .Where(c => c.KeyOrder.HasValue)
-        .OrderBy(c => c.KeyOrder)
-        .Select(c => $"[{c.Name}] {Enum.GetName(c.KeySort.GetType(), c.KeySort)}")))
-  );
-
-  CREATE NONCLUSTERED INDEX IX_@(Model.Name)_RunDate ON #@Model.Name ([RunDate]);
-
 END

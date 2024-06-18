@@ -1,5 +1,18 @@
 @model AD419.Jobs.PullNifaData.Models.TableModel;
 
+-- Creating indexes after bulk copy for performance reasons 
+
+CREATE UNIQUE CLUSTERED INDEX PK_Temp@{@Model.Name} ON #@Model.Name (
+  @Html.Raw(string.Join($",{Environment.NewLine}  ", Model.Columns
+      .Where(c => c.KeyOrder.HasValue)
+      .OrderBy(c => c.KeyOrder)
+      .Select(c => $"[{c.Name}] {Enum.GetName(c.KeySort.GetType(), c.KeySort)}")))
+);
+
+CREATE NONCLUSTERED INDEX IX_@(Model.Name)_RunDate ON #@Model.Name ([RunDate]);
+
+go
+
 DECLARE @@IsOldSnapshotData BIT;
 SET @@IsOldSnapshotData = (SELECT IIF(
   (SELECT MAX([RunDate]) FROM @{@Model.Name}_New) >= (SELECT MAX([RunDate]) FROM #@Model.Name),
@@ -101,6 +114,11 @@ ELSE
     target.IsActive = 0;
 
 go
+
+-- reset data and indexes on temp table #@Model.Name
+DROP INDEX PK_Temp@{@Model.Name} ON #@Model.Name;
+
+DROP INDEX IX_@(Model.Name)_RunDate ON #@Model.Name;
 
 truncate table #@Model.Name;
 
