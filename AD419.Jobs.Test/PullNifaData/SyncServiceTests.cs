@@ -56,8 +56,8 @@ public class SyncServiceTests
             .Setup(sdc => sdc.RollbackTransaction())
             .Returns(Task.CompletedTask);
         _mockSqlDataContext
-            .Setup(sdc => sdc.ExecuteNonQuery(It.IsAny<string>()))
-            .Callback<string>(_sentQueries.Add);
+            .Setup(sdc => sdc.ExecuteNonQuery(It.IsAny<string>(), It.IsAny<int>()))
+            .Callback<string, int>((query, timeout) => _sentQueries.Add(query));
         _mockSqlDataContext
             .Setup(sdc => sdc.BulkCopy(It.IsAny<DataTable>(), It.IsAny<string>(), It.IsAny<int>(), It.IsAny<int>()));
     }
@@ -82,7 +82,7 @@ public class SyncServiceTests
 
         // Assert
         // Each extract should generate three queries (ensure temp table, merge data, and truncate temp table)
-        _sentQueries.Count(q => Regex.IsMatch(q, "NIFA_(GL|PGM_(AWARD|EMPLOYEE|EXPENDITURE|PROJECT))")).ShouldBe(3);
+        _sentQueries.Count(q => Regex.IsMatch(q, "NIFA_(GL|PGM_(AWARD|EMPLOYEE|EXPENDITURE|PROJECT))")).ShouldBe(4);
         // BulkCopy should only be called once
         _mockSqlDataContext.Verify(sdc => sdc.BulkCopy(It.IsAny<DataTable>(), It.IsAny<string>(), It.IsAny<int>(), It.IsAny<int>()), Times.Once);
     }
@@ -103,7 +103,7 @@ public class SyncServiceTests
 
         // Assert
         // Each extract should generate three queries (ensure temp table, merge data, and truncate temp table)
-        _sentQueries.Count(q => Regex.IsMatch(q, "NIFA_(GL|PGM_(AWARD|EMPLOYEE|EXPENDITURE|PROJECT))")).ShouldBe(3);
+        _sentQueries.Count(q => Regex.IsMatch(q, "NIFA_(GL|PGM_(AWARD|EMPLOYEE|EXPENDITURE|PROJECT))")).ShouldBe(4);
         // BulkCopy should be called once for good data and once for bad data
         _mockSqlDataContext.Verify(sdc => sdc.BulkCopy(It.IsAny<DataTable>(), It.IsAny<string>(), It.IsAny<int>(), It.IsAny<int>()), Times.Exactly(2));
     }    
