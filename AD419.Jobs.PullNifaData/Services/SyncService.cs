@@ -142,11 +142,11 @@ public class SyncService
             dataTable.AddModelData(record);
         }
         Log.Information("Creating temp table {TableName}", tableModel.Name);
-        await _sqlDataContext.ExecuteScriptFromString(initTempTableScript);
+        await _sqlDataContext.ExecuteScriptFromString(initTempTableScript, _syncOptions.SqlTimeoutSeconds);
         Log.Information("Writing {TableName} data to temp table", tableModel.Name);
         await _sqlDataContext.BulkCopy(dataTable, $"#{tableModel.Name}", _syncOptions.BulkCopyBatchSize);
         Log.Information("Merging {TableName} data", tableModel.Name);
-        await _sqlDataContext.ExecuteScriptFromString(mergeTempDataScript);
+        await _sqlDataContext.ExecuteScriptFromString(mergeTempDataScript, _syncOptions.SqlTimeoutSeconds);
         if (badData.Any())
         {
             var badDataTable = TableHelper.CreateDataTable<BadDataModel>();

@@ -6,22 +6,23 @@ namespace AD419.Jobs.Core.Extensions;
 
 public static class SqlDataContextExtensions
 {
-    public static async Task ExecuteScriptFromFile(this ISqlDataContext sqlDataContext, string fileName)
+    public static async Task ExecuteScriptFromFile(this ISqlDataContext sqlDataContext, string fileName, int timeoutSeconds = 30)
     {
         Log.Information("Executing script named {FileName}", Path.GetFileName(fileName));
         // TODO: use connection.CreateBatch() once it is implemented for SqlConnection
         foreach (var batch in SqlHelper.GetBatchesFromFile(fileName))
         {
-            await sqlDataContext.ExecuteNonQuery(batch);
+            Log.Information("Attempting to execute sql batch: {batch}", batch);
+            await sqlDataContext.ExecuteNonQuery(batch, timeoutSeconds);
         }
     }
 
-    public static async Task ExecuteScriptFromString(this ISqlDataContext sqlDataContext, string script)
+    public static async Task ExecuteScriptFromString(this ISqlDataContext sqlDataContext, string script, int timeoutSeconds = 30)
     {
-        Log.Information("Attempting to execute sql script: {SqlScript}", script);
         foreach (var batch in SqlHelper.GetBatchesFromString(script))
         {
-            await sqlDataContext.ExecuteNonQuery(batch);
+            Log.Information("Attempting to execute sql batch: {batch}", batch);
+            await sqlDataContext.ExecuteNonQuery(batch, timeoutSeconds);
         }
     }
 }
