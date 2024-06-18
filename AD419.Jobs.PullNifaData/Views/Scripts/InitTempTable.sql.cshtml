@@ -1,6 +1,6 @@
 @model AD419.Jobs.PullNifaData.Models.TableModel;
 
-IF OBJECT_ID (N'dbo.#@Model.Name', N'U') IS NULL BEGIN
+IF OBJECT_ID (N'tempdb..#@Model.Name', N'U') IS NULL BEGIN
   
   CREATE TABLE #@Model.Name (
     @Html.Raw(string.Join($",{Environment.NewLine}    ", Model.Columns
