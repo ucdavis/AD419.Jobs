@@ -54,13 +54,14 @@ public sealed class SqlDataContext : IDisposable, ISqlDataContext
         _sqlTransaction = null;
     }
 
-    public async Task ExecuteNonQuery(string script)
+    public async Task ExecuteNonQuery(string script, int timeoutSeconds = 30)
     {
-        using var connection = await GetOpenConnection();
+        var connection = await GetOpenConnection();
         Log.Information("Executing batch: {BatchContent}", script);
         using var command = connection.CreateCommand();
         command.CommandText = script;
         command.Transaction = _sqlTransaction;
+        command.CommandTimeout = timeoutSeconds;
         await command.ExecuteNonQueryAsync();
     }
 
@@ -100,6 +101,6 @@ public interface ISqlDataContext
     Task BeginTransaction();
     Task CommitTransaction();
     Task RollbackTransaction();
-    Task ExecuteNonQuery(string script);
+    Task ExecuteNonQuery(string script, int timeoutSeconds = 30);
     Task BulkCopy(DataTable dataTable, string destinationTableName, int batchSize, int skipColumn = -1);
 }

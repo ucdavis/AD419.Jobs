@@ -1,40 +1,124 @@
 @model AD419.Jobs.PullNifaData.Models.TableModel;
 
-MERGE INTO @{@Model.Name}_New AS target
-USING #@Model.Name AS source ON (
-  @Html.Raw(string.Join($"{Environment.NewLine}  AND ", Model.Columns
+-- Creating indexes after bulk copy for performance reasons 
+
+CREATE UNIQUE CLUSTERED INDEX PK_Temp@{@Model.Name} ON #@Model.Name (
+  @Html.Raw(string.Join($",{Environment.NewLine}  ", Model.Columns
       .Where(c => c.KeyOrder.HasValue)
       .OrderBy(c => c.KeyOrder)
-      .Select(c => c.Nullable
-        // explicitly consider columns equal if they both contain NULL
-        ? $"(target.[{c.Name}] = source.[{c.Name}] OR (target.[{c.Name}] IS NULL AND source.[{c.Name}] IS NULL))" 
-        : $"target.[{c.Name}] = source.[{c.Name}]")))
-) 
-WHEN MATCHED THEN UPDATE SET
-  @Html.Raw(string.Join($",{Environment.NewLine}  ", Model.Columns
-      .Where(c => !c.KeyOrder.HasValue)
-      .OrderBy(c => c.ColumnOrder)
-      .Select(c => $"target.[{c.Name}] = source.[{c.Name}]"))),
-  target.LastUpdated = GETDATE(),
-  target.IsActive = 1
-WHEN NOT MATCHED BY target THEN INSERT (
-  @Html.Raw(string.Join($",{Environment.NewLine}  ", Model.Columns
-      .OrderBy(c => c.ColumnOrder)
-      .Select(c => $"[{c.Name}]"))),
-  [LastUpdated],
-  [IsActive]
-) VALUES (
-  @Html.Raw(string.Join($",{Environment.NewLine}  ", Model.Columns
-      .OrderBy(c => c.ColumnOrder)
-      .Select(c => $"source.[{c.Name}]"))),
-  GETDATE(),
-  1
-)
-WHEN NOT MATCHED BY source THEN UPDATE SET
-  target.IsActive = 0
-;
+      .Select(c => $"[{c.Name}] {Enum.GetName(c.KeySort.GetType(), c.KeySort)}")))
+);
+
+CREATE NONCLUSTERED INDEX IX_@(Model.Name)_RunDate ON #@Model.Name ([RunDate]);
 
 go
+
+DECLARE @@IsOldSnapshotData BIT;
+SET @@IsOldSnapshotData = (SELECT IIF(
+  (SELECT MAX([RunDate]) FROM @{@Model.Name}_New) >= (SELECT MAX([RunDate]) FROM #@Model.Name),
+  1,
+  0));
+
+IF @@IsOldSnapshotData = 1
+  @* -- Use a CTE to isolate ugliness of optional grouping of data from rest of merge statement *@
+  WITH source as (
+    SELECT
+      @Html.Raw(string.Join($",{Environment.NewLine}      ", Model.Columns
+        .OrderBy(c => c.ColumnOrder)
+        .Select(c => c.Aggregate.HasValue ? $"{Enum.GetName(c.Aggregate.Value.GetType(), c.Aggregate.Value)}([{c.Name}]) [{c.Name}]" : $"[{c.Name}]")))
+    FROM #@Model.Name
+    @if (@Model.Columns.Any(c => c.Aggregate.HasValue))
+    {
+      <text>
+        GROUP BY
+          @Html.Raw(string.Join($",{Environment.NewLine}          ", Model.Columns
+            .Where(c => !c.Aggregate.HasValue)
+            .OrderBy(c => c.ColumnOrder)
+            .Select(c => $"[{c.Name}]")))
+      </text>
+    }
+  )
+  MERGE INTO @{@Model.Name}_New AS target
+  USING source ON (
+    @Html.Raw(string.Join($"{Environment.NewLine}    AND ", Model.Columns
+        .Where(c => c.KeyOrder.HasValue)
+        .OrderBy(c => c.KeyOrder)
+        .Select(c => c.Nullable
+          // explicitly consider columns equal if they both contain NULL
+          ? $"(target.[{c.Name}] = source.[{c.Name}] OR (target.[{c.Name}] IS NULL AND source.[{c.Name}] IS NULL))" 
+          : $"target.[{c.Name}] = source.[{c.Name}]")))
+  ) 
+  WHEN NOT MATCHED BY target THEN INSERT (
+    @Html.Raw(string.Join($",{Environment.NewLine}    ", Model.Columns
+        .OrderBy(c => c.ColumnOrder)
+        .Select(c => $"[{c.Name}]"))),
+    [LastUpdated],
+    [IsActive]
+  ) VALUES (
+    @Html.Raw(string.Join($",{Environment.NewLine}    ", Model.Columns
+        .OrderBy(c => c.ColumnOrder)
+        .Select(c => $"source.[{c.Name}]"))),
+    GETDATE(),
+    1
+  );
+ELSE
+  @* -- Use a CTE to isolate ugliness of optional grouping of data from rest of merge statement *@
+  WITH source as (
+    SELECT
+      @Html.Raw(string.Join($",{Environment.NewLine}      ", Model.Columns
+        .OrderBy(c => c.ColumnOrder)
+        .Select(c => c.Aggregate.HasValue ? $"{Enum.GetName(c.Aggregate.Value.GetType(), c.Aggregate.Value)}([{c.Name}]) [{c.Name}]" : $"[{c.Name}]")))
+    FROM #@Model.Name
+    @if (@Model.Columns.Any(c => c.Aggregate.HasValue))
+    {
+      <text>
+        GROUP BY
+          @Html.Raw(string.Join($",{Environment.NewLine}          ", Model.Columns
+            .Where(c => !c.Aggregate.HasValue)
+            .OrderBy(c => c.ColumnOrder)
+            .Select(c => $"[{c.Name}]")))
+      </text>
+    }
+  )
+  MERGE INTO @{@Model.Name}_New AS target
+  USING source ON (
+    @Html.Raw(string.Join($"{Environment.NewLine}    AND ", Model.Columns
+        .Where(c => c.KeyOrder.HasValue)
+        .OrderBy(c => c.KeyOrder)
+        .Select(c => c.Nullable
+          // explicitly consider columns equal if they both contain NULL
+          ? $"(target.[{c.Name}] = source.[{c.Name}] OR (target.[{c.Name}] IS NULL AND source.[{c.Name}] IS NULL))" 
+          : $"target.[{c.Name}] = source.[{c.Name}]")))
+  ) 
+  WHEN MATCHED THEN UPDATE SET
+    @Html.Raw(string.Join($",{Environment.NewLine}    ", Model.Columns
+        .Where(c => !c.KeyOrder.HasValue)
+        .OrderBy(c => c.ColumnOrder)
+        .Select(c => $"target.[{c.Name}] = source.[{c.Name}]"))),
+    target.LastUpdated = GETDATE(),
+    target.IsActive = 1
+  WHEN NOT MATCHED BY target THEN INSERT (
+    @Html.Raw(string.Join($",{Environment.NewLine}    ", Model.Columns
+        .OrderBy(c => c.ColumnOrder)
+        .Select(c => $"[{c.Name}]"))),
+    [LastUpdated],
+    [IsActive]
+  ) VALUES (
+    @Html.Raw(string.Join($",{Environment.NewLine}    ", Model.Columns
+        .OrderBy(c => c.ColumnOrder)
+        .Select(c => $"source.[{c.Name}]"))),
+    GETDATE(),
+    1
+  )
+  WHEN NOT MATCHED BY source THEN UPDATE SET
+    target.IsActive = 0;
+
+go
+
+-- reset data and indexes on temp table #@Model.Name
+DROP INDEX PK_Temp@{@Model.Name} ON #@Model.Name;
+
+DROP INDEX IX_@(Model.Name)_RunDate ON #@Model.Name;
 
 truncate table #@Model.Name;
 

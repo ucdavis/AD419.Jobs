@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using AD419.Jobs.PullNifaData.Attributes;
 using CsvHelper.Configuration.Attributes;
@@ -18,6 +19,7 @@ public class NifaPgmProjectModel
 
     [Name("Award ID")]
     [DbColumnOrder]
+    [DbKeyOrder(1)]
     public string AwardID { get; set; } = "";
 
     [Name("Project Legal Entity")]
@@ -26,6 +28,7 @@ public class NifaPgmProjectModel
 
     [Name("Project Owning Organization")]
     [DbColumnOrder]
+    [MaxLength(300)]
     public string ProjectOwningOrganization { get; set; } = "";
 
     [Name("Project Number")]
@@ -34,6 +37,7 @@ public class NifaPgmProjectModel
 
     [Name("Project Name")]
     [DbColumnOrder]
+    [MaxLength(300)]
     public string ProjectName { get; set; } = "";
 
     [Name("Project Type")]
