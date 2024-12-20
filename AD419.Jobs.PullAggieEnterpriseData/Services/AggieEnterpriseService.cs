@@ -24,6 +24,52 @@ public class AggieEnterpriseService
             $"{_options.ScopeApp}-{_options.ScopeEnv}");
     }
 
+    public async IAsyncEnumerable<IErpActivitySearch_ErpActivitySearch_Data> GetActivityValues()
+    {
+        var startIndex = 0;
+        IErpActivitySearchResult? data = null;
+
+        while (startIndex > -1)
+        {
+            try
+            {
+                var result = await _apiClient.ErpActivitySearch.ExecuteAsync(new ErpActivityFilterInput
+                {
+                    SearchCommon = new SearchCommonInputs
+                    {
+                        Limit = _options.BatchSize,
+                        StartIndex = startIndex,
+                    },
+                    Enabled = new BooleanFilterInput
+                    {
+                        Eq = true
+                    },
+                },
+                "A"); // Just a placeholder. We're not interested in this portion of the response.
+
+                data = result.ReadData();
+                startIndex = data.ErpActivitySearch.Data.Count > 0
+                    ? startIndex + data.ErpActivitySearch.Data.Count
+                    : -1;
+            }
+            catch (Exception ex)
+            {
+#if DEBUG
+                Log.Error(ex, "Error getting activity values, skipping batch");
+                startIndex += _options.BatchSize;
+                continue;
+#else
+                throw;
+#endif
+            }
+
+            foreach (var item in data.ErpActivitySearch.Data)
+            {
+                yield return item;
+            }
+        }
+    }
+
     public async IAsyncEnumerable<IErpDepartmentSearch_ErpFinancialDepartmentSearch_Data> GetFinancialDepartmentValues()
     {
         var startIndex = 0;
